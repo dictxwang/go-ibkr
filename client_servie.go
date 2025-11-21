@@ -1,16 +1,20 @@
 package ibkr
 
-// ServiceI :
-type ServiceI interface {
+// ClientServiceI :
+type ClientServiceI interface {
 	Auth() AuthServiceI
 }
 
-// Service :
-type Service struct {
+// ClientService :
+type ClientService struct {
 	client *Client
 }
 
-// Market :
-func (s *Service) Market() AuthServiceI {
+// Auth :
+func (s *ClientService) Auth() AuthServiceI {
 	return &AuthService{s.client}
+}
+
+func (c *Client) Service() ClientServiceI {
+	return &ClientService{c}
 }
