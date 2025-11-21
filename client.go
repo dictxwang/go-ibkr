@@ -2,6 +2,7 @@ package ibkr
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -36,17 +37,33 @@ func (c *Client) debugf(format string, v ...interface{}) {
 }
 
 // NewClient :
-func NewClient(restBaseUrl string) *Client {
+func NewClient(restBaseUrl string, skipTlsVerify bool) *Client {
+
 	baseUrl := DefaultBaseUrl
 	if restBaseUrl != "" {
 		baseUrl = restBaseUrl
 	}
+
+	var httpClient *http.Client
+	if skipTlsVerify {
+		// Configure TLS client to skip verification
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: true, // DO NOT USE IN PRODUCTION
+		}
+		// Create a custom HTTP client with the TLS configuration
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: tlsConfig,
+			},
+		}
+	} else {
+		httpClient = &http.Client{}
+	}
+
 	return &Client{
-		httpClient: &http.Client{},
-
-		logger: newDefaultLogger(),
-
-		baseURL: baseUrl,
+		httpClient: httpClient,
+		logger:     newDefaultLogger(),
+		baseURL:    baseUrl,
 	}
 }
 
