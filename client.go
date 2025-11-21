@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	DefaultBaseUrl = "https://localhost:5000/v1/api"
+	DefaultBaseUrl = "https://localhost:5000"
 )
 
 // Client :

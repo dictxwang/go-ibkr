@@ -41,7 +41,7 @@ func (s *AuthService) PostAuthStatus() (*AuthStatusResponse, error) {
 		return nil, err
 	}
 
-	if err := s.client.postJSON("/iserver/auth/status", body, &res); err != nil {
+	if err := s.client.postJSON("/v1/api/iserver/auth/status", body, &res); err != nil {
 		return nil, err
 	}
 
