@@ -137,13 +137,13 @@ func (c *Client) Request(req *http.Request, dst interface{}) (err error) {
 		if err != nil {
 			return err
 		}
+		fmt.Printf("response body: %+v\n", string(body))
 
 		if err := json.Unmarshal(body, &dst); err != nil {
 			return err
 		}
 
 		c.debugf("response body: %v", string(body))
-		fmt.Printf("response body: %+v\n", string(body))
 		return nil
 	case resp.StatusCode == http.StatusBadRequest:
 		return fmt.Errorf("%v: Need to send the request with GET / POST (must be capitalized)", ErrBadRequest)

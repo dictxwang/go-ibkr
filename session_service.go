@@ -18,7 +18,7 @@ type PingServerResponse struct {
 	Session    string            `json:"session"`
 	SsoExpires int               `json:"ssoExpires"`
 	Collission bool              `json:"collission"`
-	UserId     string            `json:"userId"`
+	UserId     int               `json:"userId"`
 	Hmds       map[string]string `json:"hmds,omitempty"`
 }
 
