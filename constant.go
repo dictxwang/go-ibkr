@@ -5,7 +5,7 @@ type ExchangeType string
 const (
 	ExchangeTypeNYSE   = ExchangeType("NYSE")
 	ExchangeTypeBATS   = ExchangeType("BATS")
-	ExchangeTypeINET   = ExchangeType("INET")
+	ExchangeTypeISLAND = ExchangeType("ISLAND")
 	ExchangeTypeNASDAQ = ExchangeType("NASDAQ")
 	ExchangeTypeAEB    = ExchangeType("AEB")
 	ExchangeTypeBVME   = ExchangeType("BVME")
@@ -18,4 +18,13 @@ const (
 	ExchangeTypeOSEJPN = ExchangeType("OSE.JPN")
 	ExchangeTypeSGX    = ExchangeType("SGX")
 	ExchangeTypeTSEJ   = ExchangeType("TSEJ")
+)
+
+type SecurityType string
+
+const (
+	SecurityTypeSTK  = SecurityType("STK")
+	SecurityTypeIND  = SecurityType("IND")
+	SecurityTypeBOND = SecurityType("BOND")
+	SecurityTypeOPT  = SecurityType("OPT")
 )

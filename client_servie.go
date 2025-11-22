@@ -2,7 +2,7 @@ package ibkr
 
 // ClientServiceI :
 type ClientServiceI interface {
-	Auth() AuthServiceI
+	Session() SessionServiceI
 	Account() AccountServiceI
 	Contract() ContractServiceI
 }
@@ -12,9 +12,9 @@ type ClientService struct {
 	client *Client
 }
 
-// Auth :
-func (s *ClientService) Auth() AuthServiceI {
-	return &AuthService{s.client}
+// Session :
+func (s *ClientService) Session() SessionServiceI {
+	return &SessionService{s.client}
 }
 
 func (s *ClientService) Account() AccountServiceI {
