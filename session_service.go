@@ -5,7 +5,7 @@ import (
 )
 
 type SessionServiceI interface {
-	PostAuthStatus() (*IServerItem, error)
+	PostAuthStatus() (*AuthStatusInfo, error)
 	PostPingServer() (*PingServerResponse, error)
 }
 
@@ -14,12 +14,17 @@ type SessionService struct {
 	client *Client
 }
 
+type IServerInfo struct {
+	AuthStatus AuthStatusInfo `json:"authStatus"`
+}
+
 type PingServerResponse struct {
 	Session    string            `json:"session"`
 	SsoExpires int               `json:"ssoExpires"`
 	Collission bool              `json:"collission"`
 	UserId     int               `json:"userId"`
 	Hmds       map[string]string `json:"hmds,omitempty"`
+	IServer    IServerInfo       `json:"iserver"`
 }
 
 type ServerInfo struct {
@@ -27,7 +32,7 @@ type ServerInfo struct {
 	ServerVersion string `json:"serverVersion"`
 }
 
-type IServerItem struct {
+type AuthStatusInfo struct {
 	Authenticated bool       `json:"authenticated"`
 	Competing     bool       `json:"competing"`
 	Connected     bool       `json:"connected"`
@@ -38,10 +43,10 @@ type IServerItem struct {
 	Fail          string     `json:"fail"`
 }
 
-func (s *SessionService) PostAuthStatus() (*IServerItem, error) {
+func (s *SessionService) PostAuthStatus() (*AuthStatusInfo, error) {
 
 	var (
-		res IServerItem
+		res AuthStatusInfo
 	)
 
 	param := map[string]string{}
