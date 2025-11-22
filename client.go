@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	DefaultBaseUrl = "https://localhost:5000"
+	DefaultBaseUrl        = "https://localhost:5000"
+	DefaultPrefixEndpoint = "/v1/api"
 )
 
 // Client :
@@ -23,9 +24,10 @@ type Client struct {
 	debug  bool
 	logger *log.Logger
 
-	baseURL string
-	key     string
-	secret  string
+	baseURL        string
+	endpointPrefix string
+	key            string
+	secret         string
 
 	referer string
 }
@@ -37,11 +39,16 @@ func (c *Client) debugf(format string, v ...interface{}) {
 }
 
 // NewClient :
-func NewClient(restBaseUrl string, skipTlsVerify bool) *Client {
+func NewClient(restBaseUrl, restEndpointPrefix string, skipTlsVerify bool) *Client {
 
 	baseUrl := DefaultBaseUrl
 	if restBaseUrl != "" {
 		baseUrl = restBaseUrl
+	}
+
+	endpointPrefix := DefaultPrefixEndpoint
+	if restEndpointPrefix != "" {
+		endpointPrefix = restEndpointPrefix
 	}
 
 	var httpClient *http.Client
@@ -61,9 +68,10 @@ func NewClient(restBaseUrl string, skipTlsVerify bool) *Client {
 	}
 
 	return &Client{
-		httpClient: httpClient,
-		logger:     newDefaultLogger(),
-		baseURL:    baseUrl,
+		httpClient:     httpClient,
+		logger:         newDefaultLogger(),
+		baseURL:        baseUrl,
+		endpointPrefix: endpointPrefix,
 	}
 }
 
@@ -149,7 +157,7 @@ func (c *Client) getPublic(path string, query url.Values, dst interface{}) error
 	if err != nil {
 		return err
 	}
-	u.Path = path
+	u.Path = c.endpointPrefix + path
 	u.RawQuery = query.Encode()
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
@@ -170,7 +178,7 @@ func (c *Client) postJSON(path string, body []byte, dst interface{}) error {
 	if err != nil {
 		return err
 	}
-	u.Path = path
+	u.Path = c.endpointPrefix + path
 
 	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(body))
 	if err != nil {
