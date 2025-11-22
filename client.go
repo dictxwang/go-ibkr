@@ -75,6 +75,11 @@ func NewClient(restBaseUrl, restEndpointPrefix string, skipTlsVerify bool) *Clie
 	}
 }
 
+// NewDefaultClient :
+func NewDefaultClient() *Client {
+	return NewClient("", "", true)
+}
+
 // WithHTTPClient :
 func (c *Client) WithHTTPClient(httpClient *http.Client) *Client {
 	c.httpClient = httpClient

@@ -4,6 +4,7 @@ package ibkr
 type ClientServiceI interface {
 	Auth() AuthServiceI
 	Account() AccountServiceI
+	Contract() ContractServiceI
 }
 
 // ClientService :
@@ -18,6 +19,10 @@ func (s *ClientService) Auth() AuthServiceI {
 
 func (s *ClientService) Account() AccountServiceI {
 	return &AccountService{s.client}
+}
+
+func (s *ClientService) Contract() ContractServiceI {
+	return &ContractService{s.client}
 }
 
 func (c *Client) Service() ClientServiceI {
