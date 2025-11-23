@@ -19,7 +19,7 @@ type ContractServiceI interface {
 	SearchContractRules(query SearchContractRulesQuery) (*ContractRules, error)
 	GetSecurityFuturesBySymbol(symbols []string) (*map[string][]FuturesInfoItem, error)
 	GetSecurityStocksBySymbol(symbols []string) (*map[string][]StockInfoItem, error)
-	GetTradingScheduleBySymbol(query TradingScheduleQuery) (*[]TradingScheduleItem, error)
+	GetTradingScheduleBySymbol(query TradingScheduleQuery) (*[]GetTradingScheduleResponse, error)
 }
 
 type TradingScheduleQuery struct {
@@ -47,6 +47,15 @@ type TradingScheduleItem struct {
 	TradingScheduleDate  string                `json:"tradingScheduleDate"`
 	Sessions             []ScheduleSession     `json:"sessions"`
 	TradingTimes         []ScheduleTradingTime `json:"tradingtimes"`
+}
+
+type GetTradingScheduleResponse struct {
+	Id           string                `json:"id,omitempty"`
+	TradeVenueId string                `json:"tradeVenueId,omitempty"`
+	Exchange     string                `json:"exchange,omitempty"`
+	Description  string                `json:"description,omitempty"`
+	Timezone     string                `json:"timezone,omitempty"`
+	Schedules    []TradingScheduleItem `json:"schedules"`
 }
 
 type StockContractItem struct {
@@ -440,9 +449,9 @@ func (s *ContractService) GetSecurityStocksBySymbol(symbols []string) (*map[stri
 	return &res, nil
 }
 
-func (s *ContractService) GetTradingScheduleBySymbol(query TradingScheduleQuery) (*[]TradingScheduleItem, error) {
+func (s *ContractService) GetTradingScheduleBySymbol(query TradingScheduleQuery) (*[]GetTradingScheduleResponse, error) {
 
-	var res []TradingScheduleItem
+	var res []GetTradingScheduleResponse
 
 	param := url.Values{}
 	param.Add("assetClass", query.AssetClass)
