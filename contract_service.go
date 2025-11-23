@@ -275,7 +275,14 @@ func (s *ContractService) SearchSecurityDefinitionByContactId(contractIds []int)
 func (s *ContractService) GetContractInfoByContractId(contractId int) (*GetContractInfoResponse, error) {
 
 	var res GetContractInfoResponse
-	// TODO
+
+	param := url.Values{}
+	path := fmt.Sprintf("/iserver/contract/%d/info", contractId)
+
+	if err := s.client.getPublic(path, param, &res); err != nil {
+		return nil, err
+	}
+
 	return &res, nil
 }
 
