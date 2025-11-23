@@ -12,12 +12,12 @@ type ContractServiceI interface {
 	GetAllContractIds(exchange ExchangeType) (*[]ContractIdItem, error)
 	SearchSecurityDefinitionByContactId(contractIds []int) (*SearchSecurityDefinitionResponse, error)
 	GetContractInfoByContractId(contractId int) (*GetContractInfoResponse, error)
-	GetCurrencyPairs(currency string) (*[]CurrencyPairItem, error)
+	GetCurrencyPairs(currency string) (*map[string][]CurrencyPairItem, error)
 	GetCurrencyExchangeRate(source, target string) (*GetCurrencyExchangeRateResponse, error)
-	GetContractFullAllInfoAndRules(contractId int, isBuy bool) (*GetContractAllInfoAndRulesResponse, error)
+	GetContractFullAllInfoAndRules(contractId int, isBuy *bool) (*GetContractAllInfoAndRulesResponse, error)
 	SearchContractBySymbol(query SearchContractBySymbolQuery) (*[]SearchContractBySymbolItem, error)
 	SearchContractRules(query SearchContractRulesQuery) (*ContractRules, error)
-	GetSecurityFuturesBySymbol(symbols []string) (*map[string]FuturesInfoItem, error)
+	GetSecurityFuturesBySymbol(symbols []string) (*map[string][]FuturesInfoItem, error)
 	GetSecurityStocksBySymbol(symbols []string) (*map[string][]StockInfoItem, error)
 	GetTradingScheduleBySymbol(query TradingScheduleQuery) (*[]TradingScheduleItem, error)
 }
@@ -26,8 +26,8 @@ type TradingScheduleQuery struct {
 	AssetClass     string  `json:"assetClass"`
 	ContractId     int     `json:"conid"`
 	Symbol         string  `json:"symbol"`
-	Exchange       *string `json:"exchange"`
-	ExchangeFilter *string `json:"exchangeFilter"`
+	Exchange       *string `json:"exchange,omitempty"`
+	ExchangeFilter *string `json:"exchangeFilter,omitempty"`
 }
 
 type ScheduleSession struct {
@@ -73,11 +73,11 @@ type FuturesInfoItem struct {
 }
 
 type SearchContractRulesQuery struct {
-	ContractId  int    `json:"conid"`
-	Exchange    string `json:"exchange"`
-	IsBuy       bool   `json:"isBuy"`
-	ModifyOrder bool   `json:"modifyOrder"`
-	OrderId     *int   `json:"orderId,omitempty"`
+	ContractId  int     `json:"conid"`
+	Exchange    *string `json:"exchange,omitempty"`
+	IsBuy       *bool   `json:"isBuy,omitempty"`
+	ModifyOrder *bool   `json:"modifyOrder,omitempty"`
+	OrderId     *int    `json:"orderId,omitempty"`
 }
 
 type SearchContractBySymbolQuery struct {
@@ -117,7 +117,7 @@ type ContractRules struct {
 	CashSize          float64                                 `json:"cashSize"`
 	SizeIncrement     float64                                 `json:"sizeIncrement"`
 	TifTypes          []string                                `json:"tifTypes"`
-	TifDefaults       map[string]string                       `json:"tifDefaults"`
+	TifDefaults       map[string]interface{}                  `json:"tifDefaults"`
 	LimitPrice        float64                                 `json:"limitPrice"`
 	StopPrice         float64                                 `json:"stopprice"`
 	OrderOrigination  *string                                 `json:"orderOrigination"`
@@ -176,7 +176,32 @@ type CurrencyPairItem struct {
 }
 
 type GetContractInfoResponse struct {
-	// TODO
+	CfiCode                   string  `json:"cfi_code"`
+	Symbol                    string  `json:"symbol"`
+	Cusip                     *string `json:"cusip,omitempty"`
+	ExpiryFull                *string `json:"expiry_full,omitempty"`
+	ContractId                int     `json:"con_id"`
+	MaturityDate              *string `json:"maturity_date,omitempty"`
+	Industry                  string  `json:"industry"`
+	InstrumentType            string  `json:"instrument_type"'`
+	TradingClass              string  `json:"trading_class"`
+	ValidExchanges            string  `json:"valid_exchanges"`
+	AllowSellLong             bool    `json:"allow_sell_long"`
+	IsZeroCommissionSecurity  bool    `json:"is_zero_commission_security"`
+	LocalSymbol               string  `json:"local_symbol"`
+	ContractClarificationType *string `json:"contract_clarification_type,omitempty"`
+	Classifier                *string `json:"classifier,omitempty"`
+	Currency                  string  `json:"currency"`
+	Text                      *string `json:"text,omitempty"`
+	UnderlyingContractId      int     `json:"underlying_con_id"`
+	RegularTradingHour        bool    `json:"r_t_h"`
+	Multiplier                *string `json:"multiplier,omitempty"`
+	UnderlyingIssuer          *string `json:"underlying_issuer,omitempty"`
+	ContractMonth             *string `json:"contract_month,omitempty"`
+	CompanyName               string  `json:"company_name"`
+	SmartAvailable            bool    `json:"smart_available"`
+	Exchange                  string  `json:"exchange"`
+	Category                  string  `json:"category"`
 }
 
 type IncrementRule struct {
@@ -286,10 +311,10 @@ func (s *ContractService) GetContractInfoByContractId(contractId int) (*GetContr
 	return &res, nil
 }
 
-func (s *ContractService) GetCurrencyPairs(currency string) (*[]CurrencyPairItem, error) {
+func (s *ContractService) GetCurrencyPairs(currency string) (*map[string][]CurrencyPairItem, error) {
 
 	var (
-		res []CurrencyPairItem
+		res map[string][]CurrencyPairItem
 	)
 
 	param := url.Values{}
@@ -319,12 +344,12 @@ func (s *ContractService) GetCurrencyExchangeRate(source, target string) (*GetCu
 	return &res, nil
 }
 
-func (s *ContractService) GetContractFullAllInfoAndRules(contractId int, isBuy bool) (*GetContractAllInfoAndRulesResponse, error) {
+func (s *ContractService) GetContractFullAllInfoAndRules(contractId int, isBuy *bool) (*GetContractAllInfoAndRulesResponse, error) {
 
 	var res GetContractAllInfoAndRulesResponse
 
 	param := url.Values{}
-	param.Add("isBuy", strconv.FormatBool(isBuy))
+	param.Add("isBuy", strconv.FormatBool(*isBuy))
 
 	path := fmt.Sprintf("/iserver/contract/%d/info-and-rules", contractId)
 
@@ -371,9 +396,9 @@ func (s *ContractService) SearchContractRules(query SearchContractRulesQuery) (*
 	return &res, nil
 }
 
-func (s *ContractService) GetSecurityFuturesBySymbol(symbols []string) (*map[string]FuturesInfoItem, error) {
+func (s *ContractService) GetSecurityFuturesBySymbol(symbols []string) (*map[string][]FuturesInfoItem, error) {
 
-	var res map[string]FuturesInfoItem
+	var res map[string][]FuturesInfoItem
 
 	param := url.Values{}
 	param.Add("symbols", strings.Join(symbols, ","))

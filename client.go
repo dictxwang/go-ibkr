@@ -118,7 +118,6 @@ func (c *Client) WithReferer(referer string) *Client {
 // Request :
 func (c *Client) Request(req *http.Request, dst interface{}) (err error) {
 	c.debugf("request: %v", req)
-	fmt.Printf("request: %+v\n", req)
 	resp, err := c.httpClient.Do(req)
 	c.debugf("response: %v", resp)
 	if err != nil {

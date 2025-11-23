@@ -23,8 +23,13 @@ const (
 type SecurityType string
 
 const (
-	SecurityTypeSTK  = SecurityType("STK")
-	SecurityTypeIND  = SecurityType("IND")
-	SecurityTypeBOND = SecurityType("BOND")
-	SecurityTypeOPT  = SecurityType("OPT")
+	SecurityTypeStock                 = SecurityType("STK")
+	SecurityTypeOption                = SecurityType("OPT")
+	SecurityTypeFuture                = SecurityType("FUT")
+	SecurityTypeContractForDifference = SecurityType("CFD")
+	SecurityTypeWarrant               = SecurityType("WAR")
+	SecurityTypeForex                 = SecurityType("SWP")
+	SecurityTypeMutualFund            = SecurityType("FND")
+	SecurityTypeBond                  = SecurityType("BND")
+	SecurityTypeInterCommoditySpreads = SecurityType("ICS")
 )
