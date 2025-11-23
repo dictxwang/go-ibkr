@@ -146,7 +146,7 @@ func (c *Client) Request(req *http.Request, dst interface{}) (err error) {
 		c.debugf("response body: %v", string(body))
 		return nil
 	case resp.StatusCode == http.StatusBadRequest:
-		return fmt.Errorf("%v: Need to send the request with GET / POST (must be capitalized)", ErrBadRequest)
+		return fmt.Errorf("%v: Need to send the request with GET / POST (must be capitalized) url=%s", ErrBadRequest, req.URL.String())
 	case resp.StatusCode == http.StatusUnauthorized:
 		return fmt.Errorf("%w: invalid key/secret", ErrInvalidRequest)
 	case resp.StatusCode == http.StatusForbidden:

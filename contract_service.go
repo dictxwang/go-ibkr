@@ -131,7 +131,7 @@ type ContractRules struct {
 	IncrementType     int                                     `json:"incrementType"`
 	IncrementRules    []IncrementRule                         `json:"incrementRules"`
 	HasSecondary      bool                                    `json:"hasSecondary"`
-	Increment         bool                                    `json:"increment"`
+	Increment         float64                                 `json:"increment"`
 	IncrementDigits   int                                     `json:"incrementDigits"`
 }
 
@@ -349,7 +349,9 @@ func (s *ContractService) GetContractFullAllInfoAndRules(contractId int, isBuy *
 	var res GetContractAllInfoAndRulesResponse
 
 	param := url.Values{}
-	param.Add("isBuy", strconv.FormatBool(*isBuy))
+	if isBuy != nil {
+		param.Add("isBuy", strconv.FormatBool(*isBuy))
+	}
 
 	path := fmt.Sprintf("/iserver/contract/%d/info-and-rules", contractId)
 
@@ -384,7 +386,21 @@ func (s *ContractService) SearchContractRules(query SearchContractRulesQuery) (*
 
 	var res ContractRules
 
-	body, err := json.Marshal(query)
+	param := map[string]interface{}{}
+	param["conid"] = query.ContractId
+	if query.Exchange != nil {
+		param["exchange"] = *query.Exchange
+	}
+	if query.IsBuy != nil {
+		param["isBuy"] = *query.IsBuy
+	}
+	if query.ModifyOrder != nil {
+		param["modifyOrder"] = *query.ModifyOrder
+	}
+	if query.OrderId != nil {
+		param["orderId"] = *query.OrderId
+	}
+	body, err := json.Marshal(param)
 	if err != nil {
 		return nil, err
 	}
@@ -430,8 +446,11 @@ func (s *ContractService) GetTradingScheduleBySymbol(query TradingScheduleQuery)
 
 	param := url.Values{}
 	param.Add("assetClass", query.AssetClass)
-	param.Add("conid", fmt.Sprintf("%d", query.ContractId))
-	param.Add("symbol", query.Symbol)
+	if query.ContractId > 0 {
+		param.Add("conid", fmt.Sprintf("%d", query.ContractId))
+	} else if query.Symbol != "" {
+		param.Add("symbol", query.Symbol)
+	}
 	if query.Exchange != nil {
 		param.Add("exchange", *query.Exchange)
 	}
