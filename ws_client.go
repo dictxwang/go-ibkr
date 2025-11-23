@@ -40,6 +40,11 @@ func NewWebsocketClient(wsBaseUrl string, wsPrefixEndpoint string, skipTlsVerify
 	}
 }
 
+// NewDefaultWebsocketClient :
+func NewDefaultWebsocketClient() *WebSocketClient {
+	return NewWebsocketClient("", "", true)
+}
+
 // WithDebug :
 func (c *WebSocketClient) WithDebug(debug bool) *WebSocketClient {
 	c.debug = debug
@@ -65,8 +70,8 @@ func (c *WebSocketClient) WithPrefixEndpoint(prefixEndpoint string) *WebSocketCl
 	return c
 }
 
-// WitSkipTLSVersify :
-func (c *WebSocketClient) WitSkipTLSVersify(skipTlsVerify bool) *WebSocketClient {
+// WithSkipTLSVersify :
+func (c *WebSocketClient) WithSkipTLSVersify(skipTlsVerify bool) *WebSocketClient {
 	c.skipTLSVerify = skipTlsVerify
 	return c
 }

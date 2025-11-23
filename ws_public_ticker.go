@@ -7,6 +7,16 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+func (s *WebsocketPublicService) UnSubscribeTicker(
+	param WebsocketPublicTickerParam,
+) error {
+	args := fmt.Sprintf("umd+%d+{}", param.ContractId)
+	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *WebsocketPublicService) SubscribeTicker(
 	param WebsocketPublicTickerParam,
 	handler func(WebsocketPublicTickerResponse) error,
@@ -43,27 +53,12 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	s.tickerResponseHandler = handler
 
 	return func() error {
-		fieldsMap := map[string][]string{}
-		fieldsMap["fields"] = fields
-		buf, err := json.Marshal(fieldsMap)
-		if err != nil {
-			return err
-		}
-		args := fmt.Sprintf("umd+%d+%s", param.ContractId, string(buf))
+		args := fmt.Sprintf("umd+%d+{}", param.ContractId)
 		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 			return err
 		}
-
 		return nil
 	}, nil
-}
-
-func (s *WebsocketPublicService) fillResponse(data map[string]interface{}, response WebsocketPublicTickerResponse) error {
-	bidPrice, has := data["84"]
-	if has {
-		response.BidPrice = bidPrice.(float64)
-	}
-	// TODO
 }
 
 type WebsocketPublicTickerParam struct {
@@ -88,8 +83,8 @@ type WebsocketPublicTickerResponse struct {
 	ContractId             int     `json:"conid,omitempty"`
 	UpdateTime             int64   `json:"_updated,omitempty"`
 	MarketDataAvailability string  `json:"6509,omitempty"`
-	BidSize                float64 `json:"bs,omitempty"`
-	BidPrice               float64 `json:"bp,omitempty"`
-	AskSize                float64 `json:"as,omitempty"`
-	AskPrice               float64 `json:"ap,omitempty"`
+	BidSize                float64 `json:"88,omitempty"`
+	BidPrice               float64 `json:"84,omitempty"`
+	AskSize                float64 `json:"85,omitempty"`
+	AskPrice               float64 `json:"86,omitempty"`
 }
