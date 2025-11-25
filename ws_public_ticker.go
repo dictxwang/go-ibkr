@@ -14,6 +14,7 @@ func (s *WebsocketPublicService) UnSubscribeTicker(
 	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 		return err
 	}
+	s.alreadySubscribed = false
 	return nil
 }
 
@@ -51,12 +52,14 @@ func (s *WebsocketPublicService) SubscribeTicker(
 
 	s.subscribeChannel = WsPublicSubscribeChannelTicker
 	s.tickerResponseHandler = handler
+	s.alreadySubscribed = true
 
 	return func() error {
 		args := fmt.Sprintf("umd+%d+{}", param.ContractId)
 		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 			return err
 		}
+		s.alreadySubscribed = false
 		return nil
 	}, nil
 }

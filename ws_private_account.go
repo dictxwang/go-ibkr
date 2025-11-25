@@ -54,12 +54,14 @@ func (s *WebsocketPrivateService) SubscribeAccountSummary(
 
 	s.subscribeChannel = WsPrivateSubscribeChannelAccountSummary
 	s.accountSummaryResponseHandler = handler
+	s.alreadySubscribed = true
 
 	return func() error {
 		args := fmt.Sprintf("usd+%s+{}", param.AccountId)
 		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 			return err
 		}
+		s.alreadySubscribed = false
 		return nil
 	}, nil
 }
@@ -70,6 +72,7 @@ func (s *WebsocketPrivateService) UnSubscribeAccountSummary(
 	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 		return err
 	}
+	s.alreadySubscribed = false
 	return nil
 }
 
