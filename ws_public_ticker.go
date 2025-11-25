@@ -45,6 +45,7 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	}
 
 	args := fmt.Sprintf("smd%d%s", param.ContractId, string(buf))
+	args = fmt.Sprintf("smd+%d+{}", param.ContractId)
 
 	fmt.Printf("subscribe ticker 04: %s\n", args)
 	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
