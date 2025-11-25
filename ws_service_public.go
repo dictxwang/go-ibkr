@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"os"
 	"os/signal"
@@ -120,9 +119,7 @@ func (s *WebsocketPublicService) Start(ctx context.Context, errHandler ErrHandle
 
 // Run :
 func (s *WebsocketPublicService) Run() error {
-	fmt.Printf(">> before read message\n")
 	_, message, err := s.connection.ReadMessage()
-	fmt.Printf(">> after read message: %+v\n", message)
 	if err != nil {
 		return err
 	}
