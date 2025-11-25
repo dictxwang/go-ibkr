@@ -10,9 +10,11 @@ import (
 func (s *WebsocketPublicService) UnSubscribeTicker(
 	param WebsocketPublicTickerParam,
 ) error {
-	args := fmt.Sprintf("umd+%d+{}", param.ContractId)
-	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
-		return err
+	for _, contractId := range param.ContractIds {
+		args := fmt.Sprintf("umd+%d+{}", contractId)
+		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+			return err
+		}
 	}
 	s.alreadySubscribed = false
 	return nil
@@ -39,21 +41,18 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	fieldsMap := map[string][]string{}
 	fieldsMap["fields"] = fields
 
-	//buf, err := json.Marshal(fieldsMap)
-	//if err != nil {
-	//	return nil, err
-	//}
-
-	buf, err := json.Marshal(fields)
+	buf, err := json.Marshal(fieldsMap)
 	if err != nil {
 		return nil, err
 	}
 
-	args := fmt.Sprintf("smd+%d+{%s}", param.ContractId, string(buf))
+	for _, contractId := range param.ContractIds {
+		args := fmt.Sprintf("smd+%d+%s", contractId, string(buf))
 
-	fmt.Printf("subscribe ticker 04: %s\n", args)
-	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
-		return nil, err
+		fmt.Printf("subscribe ticker 04: %s\n", args)
+		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+			return nil, err
+		}
 	}
 
 	s.subscribeChannel = WsPublicSubscribeChannelTicker
@@ -61,9 +60,11 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	s.alreadySubscribed = true
 
 	return func() error {
-		args := fmt.Sprintf("umd+%d+{}", param.ContractId)
-		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
-			return err
+		for _, contractId := range param.ContractIds {
+			args := fmt.Sprintf("umd+%d+{}", contractId)
+			if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+				return err
+			}
 		}
 		s.alreadySubscribed = false
 		return nil
@@ -71,7 +72,7 @@ func (s *WebsocketPublicService) SubscribeTicker(
 }
 
 type WebsocketPublicTickerParam struct {
-	ContractId    int
+	ContractIds   []int
 	fieldBidPrice string
 	fieldBidSize  string
 	fieldAskPrice string
