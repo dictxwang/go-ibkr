@@ -1,11 +1,20 @@
 package ibkr
 
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/gorilla/websocket"
+)
+
 type WebsocketPrivateAccountSummaryParam struct {
-	// TODO
+	AccountId string
+	Keys      []string
+	Fields    []string
 }
 
 type WebsocketPrivateAccountSummaryResponse struct {
-	// TODO
+	Result map[string]interface{} `json:"result"`
 }
 
 type WebsocketPrivateAccountLedgerParam struct {
@@ -20,13 +29,47 @@ func (s *WebsocketPrivateService) SubscribeAccountSummary(
 	param WebsocketPrivateAccountSummaryParam,
 	handler func(WebsocketPrivateAccountSummaryResponse) error,
 ) (func() error, error) {
-	// TODO
-	return nil, nil
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.alreadySubscribed {
+		return nil, errors.New("already subscribed")
+	}
+
+	paramMap := map[string][]string{}
+	paramMap["keys"] = param.Keys
+	paramMap["fields"] = param.Fields
+
+	buf, err := json.Marshal(paramMap)
+	if err != nil {
+		return nil, err
+	}
+
+	args := fmt.Sprintf("ssd+%s+%s", param.AccountId, string(buf))
+
+	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+		return nil, err
+	}
+
+	s.subscribeChannel = WsPrivateSubscribeChannelAccountSummary
+	s.accountSummaryResponseHandler = handler
+
+	return func() error {
+		args := fmt.Sprintf("usd+%s+{}", param.AccountId)
+		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+			return err
+		}
+		return nil
+	}, nil
 }
 func (s *WebsocketPrivateService) UnSubscribeAccountSummary(
 	param WebsocketPrivateAccountSummaryParam,
 ) error {
-	// TODO
+	args := fmt.Sprintf("usd+%s+{}", param.AccountId)
+	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+		return err
+	}
 	return nil
 }
 
