@@ -2,10 +2,11 @@ package ibkr
 
 import (
 	"crypto/tls"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 )
 
 // WebsocketClientServiceI :
@@ -28,17 +29,27 @@ func (c *WebSocketClient) Service() *WebsocketClientService {
 
 // Public :
 func (s *WebsocketClientService) Public(sessionToken string) (*WebsocketPublicService, error) {
-	url := s.client.baseURL + s.client.prefixEndpoint
+	url1 := s.client.baseURL + s.client.prefixEndpoint
 	dialer := generateCustomDialer(s.client.skipTLSVerify, "")
+	cookie := &http.Cookie{
+		Name:   "api",
+		Value:  sessionToken,
+		Path:   "/",
+		Domain: "localhost:5000",
+	}
+	jar, _ := cookiejar.New(nil)
+	serverURL, _ := url.Parse(s.client.baseURL)
+	jar.SetCookies(serverURL, []*http.Cookie{cookie})
+	dialer.Jar = jar
 	requestHeader := makeRequestHeader(sessionToken)
-	c, _, err := dialer.Dial(url, requestHeader)
+	c, _, err := dialer.Dial(url1, requestHeader)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO
-	login := fmt.Sprintf("{\"session\":\"%s\"}", sessionToken)
-	c.WriteMessage(websocket.TextMessage, []byte(login))
+	//// TODO
+	//login := fmt.Sprintf("{\"session\":\"%s\"}", sessionToken)
+	//c.WriteMessage(websocket.TextMessage, []byte(login))
 	return &WebsocketPublicService{
 		client:     s.client,
 		connection: c,
@@ -117,6 +128,6 @@ func generateCustomDialer(skipTlsVerify bool, sourceIP string) *websocket.Dialer
 func makeRequestHeader(sessionToken string) http.Header {
 	httpHeader := http.Header{}
 	httpHeader.Add("origin", "interactivebrokers.github.io")
-	httpHeader.Add("cookie", "api="+sessionToken)
+	//httpHeader.Add("cookie", "api="+sessionToken)
 	return httpHeader
 }
