@@ -2,6 +2,7 @@ package ibkr
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
@@ -34,6 +35,10 @@ func (s *WebsocketClientService) Public(sessionToken string) (*WebsocketPublicSe
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO
+	login := fmt.Sprintf("{\"session\":\"%s\"}", sessionToken)
+	c.WriteMessage(websocket.TextMessage, []byte(login))
 	return &WebsocketPublicService{
 		client:     s.client,
 		connection: c,
