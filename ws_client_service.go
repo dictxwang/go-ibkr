@@ -35,7 +35,7 @@ func (s *WebsocketClientService) Public(sessionToken string) (*WebsocketPublicSe
 		Name:   "api",
 		Value:  sessionToken,
 		Path:   "/",
-		Domain: "localhost:5000",
+		Domain: "localhost",
 	}
 	jar, _ := cookiejar.New(nil)
 	serverURL, _ := url.Parse(s.client.baseURL)
@@ -127,7 +127,7 @@ func generateCustomDialer(skipTlsVerify bool, sourceIP string) *websocket.Dialer
 
 func makeRequestHeader(sessionToken string) http.Header {
 	httpHeader := http.Header{}
-	httpHeader.Add("origin", "interactivebrokers.github.io")
+	//httpHeader.Add("origin", "interactivebrokers.github.io")
 	//httpHeader.Add("cookie", "api="+sessionToken)
 	return httpHeader
 }
