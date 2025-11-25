@@ -166,8 +166,6 @@ func (c *Client) getPublic(path string, query url.Values, dst interface{}) error
 	u.Path = c.endpointPrefix + path
 	u.RawQuery = query.Encode()
 
-	fmt.Printf("url: %s\n", u.String())
-
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
 		return err

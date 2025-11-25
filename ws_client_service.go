@@ -11,6 +11,8 @@ import (
 type WebsocketClientServiceI interface {
 	Public(sessionToken string) (*WebsocketPublicService, error)
 	PublicWithSourceIP(sessionToken string, sourceIP string) (*WebsocketPublicService, error)
+	Private(sessionToken string) (*WebsocketPublicService, error)
+	PrivateWithSourceIP(sessionToken string, sourceIP string) (*WebsocketPublicService, error)
 }
 
 // WebsocketClientService :
@@ -48,6 +50,36 @@ func (s *WebsocketClientService) PublicWithSourceIP(sessionToken, sourceIP strin
 		return nil, err
 	}
 	return &WebsocketPublicService{
+		client:     s.client,
+		connection: c,
+	}, nil
+}
+
+// Private :
+func (s *WebsocketClientService) Private(sessionToken string) (*WebsocketPrivateService, error) {
+	url := s.client.baseURL + s.client.prefixEndpoint
+	dialer := generateCustomDialer(s.client.skipTLSVerify, "")
+	requestHeader := makeRequestHeader(sessionToken)
+	c, _, err := dialer.Dial(url, requestHeader)
+	if err != nil {
+		return nil, err
+	}
+	return &WebsocketPrivateService{
+		client:     s.client,
+		connection: c,
+	}, nil
+}
+
+// PrivateWithSourceIP :
+func (s *WebsocketClientService) PrivateWithSourceIP(sessionToken, sourceIP string) (*WebsocketPrivateService, error) {
+	url := s.client.baseURL + s.client.prefixEndpoint
+	dialer := generateCustomDialer(s.client.skipTLSVerify, sourceIP)
+	requestHeader := makeRequestHeader(sessionToken)
+	c, _, err := dialer.Dial(url, requestHeader)
+	if err != nil {
+		return nil, err
+	}
+	return &WebsocketPrivateService{
 		client:     s.client,
 		connection: c,
 	}, nil

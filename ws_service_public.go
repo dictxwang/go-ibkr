@@ -26,11 +26,19 @@ type WebsocketPublicServiceI interface {
 	Run() error
 	Ping() error
 	Close() error
+
 	SubscribeTicker(
 		WebsocketPublicTickerParam,
 		func(WebsocketPublicTickerResponse) error,
 	) (func() error, error)
 	UnSubscribeTicker(
+		WebsocketPublicTickerParam,
+	) error
+	SubscribeBookTrader(
+		WebsocketPublicBookTraderParam,
+		func(WebsocketPublicBookTraderResponse) error,
+	) (func() error, error)
+	WebsocketPublicBookTraderParam(
 		WebsocketPublicTickerParam,
 	) error
 }
@@ -41,8 +49,9 @@ type WebsocketPublicService struct {
 	alreadySubscribed bool
 	mu                sync.Mutex
 
-	subscribeChannel      WsPublicSubscribeChannel
-	tickerResponseHandler func(WebsocketPublicTickerResponse) error
+	subscribeChannel          WsPublicSubscribeChannel
+	tickerResponseHandler     func(WebsocketPublicTickerResponse) error
+	bookTraderResponseHandler func(WebsocketPublicTickerResponse) error
 }
 
 // parseResponse :
