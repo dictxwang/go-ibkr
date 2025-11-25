@@ -39,13 +39,17 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	fieldsMap := map[string][]string{}
 	fieldsMap["fields"] = fields
 
-	buf, err := json.Marshal(fieldsMap)
+	//buf, err := json.Marshal(fieldsMap)
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	buf, err := json.Marshal(fields)
 	if err != nil {
 		return nil, err
 	}
 
-	args := fmt.Sprintf("smd%d%s", param.ContractId, string(buf))
-	args = fmt.Sprintf("smd+%d+{}", param.ContractId)
+	args := fmt.Sprintf("smd+%d+%s", param.ContractId, string(buf))
 
 	fmt.Printf("subscribe ticker 04: %s\n", args)
 	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
