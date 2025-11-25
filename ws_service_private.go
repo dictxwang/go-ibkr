@@ -70,7 +70,8 @@ type WebsocketPrivateService struct {
 	client            *WebSocketClient
 	connection        *websocket.Conn
 	alreadySubscribed bool
-	mu                sync.Mutex
+	writeMutex        sync.Mutex
+	subscribeMutex    sync.Mutex
 
 	subscribeChannel              WsPrivateSubscribeChannel
 	accountSummaryResponseHandler func(WebsocketPrivateAccountSummaryResponse) error
@@ -221,8 +222,8 @@ func (s *WebsocketPrivateService) Close() error {
 }
 
 func (s *WebsocketPrivateService) writeMessage(messageType int, body []byte) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.writeMutex.Lock()
+	defer s.writeMutex.Unlock()
 
 	if err := s.connection.WriteMessage(messageType, body); err != nil {
 		return err

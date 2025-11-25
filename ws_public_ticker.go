@@ -23,15 +23,12 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	handler func(WebsocketPublicTickerResponse) error,
 ) (func() error, error) {
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	fmt.Printf("subscribe ticker 01\n")
+	s.subscribeMutex.Lock()
+	defer s.subscribeMutex.Unlock()
 
 	if s.alreadySubscribed {
 		return nil, errors.New("already subscribed")
 	}
-	fmt.Printf("subscribe ticker 02\n")
 
 	param.fillFields()
 	fields := make([]string, 0)
@@ -46,16 +43,12 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("subscribe ticker 03\n")
 
-	args := fmt.Sprintf("smd%d%s", param.ContractId, string(buf))
+	args := fmt.Sprintf("smd+%d+%s", param.ContractId, string(buf))
 
-	fmt.Printf("subscribe ticker 04: %s\n", args)
 	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("subscribe ticker 05\n")
 
 	s.subscribeChannel = WsPublicSubscribeChannelTicker
 	s.tickerResponseHandler = handler

@@ -30,8 +30,8 @@ func (s *WebsocketPrivateService) SubscribeAccountSummary(
 	handler func(WebsocketPrivateAccountSummaryResponse) error,
 ) (func() error, error) {
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.subscribeMutex.Lock()
+	defer s.subscribeMutex.Unlock()
 
 	if s.alreadySubscribed {
 		return nil, errors.New("already subscribed")

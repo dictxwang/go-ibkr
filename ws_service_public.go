@@ -47,7 +47,8 @@ type WebsocketPublicService struct {
 	client            *WebSocketClient
 	connection        *websocket.Conn
 	alreadySubscribed bool
-	mu                sync.Mutex
+	writeMutex        sync.Mutex
+	subscribeMutex    sync.Mutex
 
 	subscribeChannel          WsPublicSubscribeChannel
 	tickerResponseHandler     func(WebsocketPublicTickerResponse) error
@@ -162,8 +163,8 @@ func (s *WebsocketPublicService) Close() error {
 }
 
 func (s *WebsocketPublicService) writeMessage(messageType int, body []byte) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.writeMutex.Lock()
+	defer s.writeMutex.Unlock()
 
 	if err := s.connection.WriteMessage(messageType, body); err != nil {
 		return err
