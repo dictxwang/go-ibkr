@@ -28,7 +28,7 @@ func NewWebsocketClient(wsBaseUrl string, wsPrefixEndpoint string, skipTlsVerify
 	if wsBaseUrl != "" {
 		baseUrl = wsBaseUrl
 	}
-	prefixEndpoint := DefaultPrefixEndpoint
+	prefixEndpoint := DefaultWebsocketPrefixEndpoint
 	if wsPrefixEndpoint != "" {
 		prefixEndpoint = wsPrefixEndpoint
 	}
