@@ -31,7 +31,6 @@ func (s *WebsocketPublicService) SubscribeHistoricalTicker(
 	for _, contractId := range param.ContractIds {
 		args := fmt.Sprintf("smh+%d+%s", contractId, string(buf))
 
-		fmt.Printf("subscribe historical: %s\n", args)
 		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 			return nil, err
 		}

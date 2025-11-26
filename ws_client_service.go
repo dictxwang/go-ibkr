@@ -134,10 +134,5 @@ func generateCustomDialer(skipTlsVerify bool, sourceIP string) *websocket.Dialer
 func makeRequestHeader(sessionToken string) http.Header {
 	httpHeader := http.Header{}
 	//httpHeader.Add("origin", "interactivebrokers.github.io")
-	//smap := map[string]string{}
-	//smap["session"] = sessionToken
-	//b, _ := json.Marshal(smap)
-	//fmt.Printf("cooike: %s", "api="+string(b))
-	//httpHeader.Add("cookie", "api="+string(b))
 	return httpHeader
 }

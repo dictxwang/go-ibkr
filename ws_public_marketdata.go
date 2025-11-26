@@ -34,7 +34,6 @@ func (s *WebsocketPublicService) SubscribeMarketData(
 	for _, contractId := range param.ContractIds {
 		args := fmt.Sprintf("smd+%d+%s", contractId, string(buf))
 
-		fmt.Printf("subscribe ticker 04: %s\n", args)
 		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 			return nil, err
 		}

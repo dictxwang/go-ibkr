@@ -47,12 +47,9 @@ type WebsocketPrivateServiceI interface {
 		WebsocketPrivateOrderParam,
 	) error
 	SubscribePnL(
-		WebsocketPrivatePnLParam,
 		func(WebsocketPrivatePnLResponse) error,
 	) (func() error, error)
-	UnsubscribePnL(
-		WebsocketPrivatePnLParam,
-	) error
+	UnsubscribePnL() error
 	SubscribeTradesData(
 		WebsocketPrivateTradesDataParam,
 		func(WebsocketPrivateTradesDataResponse) error,

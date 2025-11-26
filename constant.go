@@ -60,3 +60,29 @@ const (
 	UnsolicitedMessageTopicSystemConnection = "system"
 	UnsolicitedMessageTopicNotifications    = "ntf"
 )
+
+type OrderStatus string
+
+const (
+	OrderStatusInactive      = OrderStatus("Inactive")
+	OrderStatusPendingSubmit = OrderStatus("PendingSubmit")
+	OrderStatusPreSubmitted  = OrderStatus("PreSubmitted")
+	OrderStatusSubmitted     = OrderStatus("Submitted")
+	OrderStatusFilled        = OrderStatus("Filled")
+	OrderStatusPendingCancel = OrderStatus("PendingCancel")
+	OrderStatusCancelled     = OrderStatus("Cancelled")
+	OrderStatusWarnState     = OrderStatus("WarnState")
+)
+
+type OrderStatusFilterValue string
+
+const (
+	OrderStatusFilterValueInactive      = OrderStatusFilterValue("inactive")
+	OrderStatusFilterValuePendingSubmit = OrderStatusFilterValue("pending_submit")
+	OrderStatusFilterValuePreSubmitted  = OrderStatusFilterValue("pre_submitted")
+	OrderStatusFilterValueSubmitted     = OrderStatusFilterValue("submitted")
+	OrderStatusFilterValueFilled        = OrderStatusFilterValue("filled")
+	OrderStatusFilterValuePendingCancel = OrderStatusFilterValue("pending_cancel")
+	OrderStatusFilterValueCancelled     = OrderStatusFilterValue("cancelled")
+	OrderStatusFilterValueWarnState     = OrderStatusFilterValue("warnState")
+)
