@@ -33,3 +33,22 @@ const (
 	SecurityTypeBond                  = SecurityType("BND")
 	SecurityTypeInterCommoditySpreads = SecurityType("ICS")
 )
+
+type MessageTopic string
+
+const (
+	MessageTopicSubscribeTicker           = "smd"
+	MessageTopicUnsubscribeTicker         = "umd"
+	MessageTopicSubscribeBookTrader       = "sbd"
+	MessageTopicUnsubscribeBookTrader     = "ubd"
+	MessageTopicSubscribeAccountSummary   = "ssd"
+	MessageTopicUnsubscribeAccountSummary = "usd"
+	MessageTopicSubscribeAccountLedger    = "sld"
+	MessageTopicUnsubscribeAccountLedger  = "uld"
+	MessageTopicSubscribeOrder            = "sor"
+	MessageTopicUnsubscribeOrder          = "uor"
+	MessageTopicSubscribePnL              = "spl"
+	MessageTopicUnsubscribePnL            = "upl"
+	MessageTopicSubscribeTradesData       = "str"
+	MessageTopicUnsubscribeTradesData     = "utr"
+)

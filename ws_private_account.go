@@ -2,7 +2,6 @@ package ibkr
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"
 )
@@ -30,13 +29,6 @@ func (s *WebsocketPrivateService) SubscribeAccountSummary(
 	handler func(WebsocketPrivateAccountSummaryResponse) error,
 ) (func() error, error) {
 
-	s.subscribeMutex.Lock()
-	defer s.subscribeMutex.Unlock()
-
-	if s.alreadySubscribed {
-		return nil, errors.New("already subscribed")
-	}
-
 	paramMap := map[string][]string{}
 	paramMap["keys"] = param.Keys
 	paramMap["fields"] = param.Fields
@@ -52,16 +44,13 @@ func (s *WebsocketPrivateService) SubscribeAccountSummary(
 		return nil, err
 	}
 
-	s.subscribeChannel = WsPrivateSubscribeChannelAccountSummary
 	s.accountSummaryResponseHandler = handler
-	s.alreadySubscribed = true
 
 	return func() error {
 		args := fmt.Sprintf("usd+%s+{}", param.AccountId)
 		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 			return err
 		}
-		s.alreadySubscribed = false
 		return nil
 	}, nil
 }
@@ -72,7 +61,6 @@ func (s *WebsocketPrivateService) UnSubscribeAccountSummary(
 	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
 		return err
 	}
-	s.alreadySubscribed = false
 	return nil
 }
 

@@ -33,18 +33,18 @@ func (s *WebsocketClientService) Public(sessionToken string) (*WebsocketPublicSe
 	url1 := s.client.baseURL + s.client.prefixEndpoint
 	dialer := generateCustomDialer(s.client.skipTLSVerify, "")
 
-	smap := map[string]string{}
-	smap["session"] = sessionToken
-	b, _ := json.Marshal(smap)
+	value := map[string]string{}
+	value["session"] = sessionToken
+	cv, _ := json.Marshal(value)
 
+	serverURL, _ := url.Parse(s.client.baseURL)
 	cookie := &http.Cookie{
 		Name:   "api",
-		Value:  string(b),
+		Value:  string(cv),
 		Path:   "/",
-		Domain: "localhost",
+		Domain: serverURL.Host,
 	}
 	jar, _ := cookiejar.New(nil)
-	serverURL, _ := url.Parse(s.client.baseURL)
 	jar.SetCookies(serverURL, []*http.Cookie{cookie})
 	dialer.Jar = jar
 	requestHeader := makeRequestHeader(sessionToken)

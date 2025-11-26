@@ -2,7 +2,6 @@ package ibkr
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"
 )
@@ -16,7 +15,6 @@ func (s *WebsocketPublicService) UnSubscribeTicker(
 			return err
 		}
 	}
-	s.alreadySubscribed = false
 	return nil
 }
 
@@ -24,13 +22,6 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	param WebsocketPublicTickerParam,
 	handler func(WebsocketPublicTickerResponse) error,
 ) (func() error, error) {
-
-	s.subscribeMutex.Lock()
-	defer s.subscribeMutex.Unlock()
-
-	if s.alreadySubscribed {
-		return nil, errors.New("already subscribed")
-	}
 
 	param.fillFields()
 	fields := make([]string, 0)
@@ -55,9 +46,7 @@ func (s *WebsocketPublicService) SubscribeTicker(
 		}
 	}
 
-	s.subscribeChannel = WsPublicSubscribeChannelTicker
 	s.tickerResponseHandler = handler
-	s.alreadySubscribed = true
 
 	return func() error {
 		for _, contractId := range param.ContractIds {
@@ -66,7 +55,6 @@ func (s *WebsocketPublicService) SubscribeTicker(
 				return err
 			}
 		}
-		s.alreadySubscribed = false
 		return nil
 	}, nil
 }

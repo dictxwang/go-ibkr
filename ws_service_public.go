@@ -8,18 +8,12 @@ import (
 	"github.com/gorilla/websocket"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"time"
 )
 
 // market data fields: https://www.interactivebrokers.com/campus/ibkr-api-page/cpapi-v1/#market-data-fields
-
-type WsPublicSubscribeChannel string
-
-const (
-	WsPublicSubscribeChannelTicker     = WsPublicSubscribeChannel("Ticker")
-	WsPublicSubscribeChannelBookTrader = WsPublicSubscribeChannel("BookTrader")
-)
 
 // WebsocketPublicServiceI :
 type WebsocketPublicServiceI interface {
@@ -45,13 +39,10 @@ type WebsocketPublicServiceI interface {
 }
 
 type WebsocketPublicService struct {
-	client            *WebSocketClient
-	connection        *websocket.Conn
-	alreadySubscribed bool
-	writeMutex        sync.Mutex
-	subscribeMutex    sync.Mutex
-
-	subscribeChannel          WsPublicSubscribeChannel
+	client     *WebSocketClient
+	connection *websocket.Conn
+	writeMutex sync.Mutex
+	
 	tickerResponseHandler     func(WebsocketPublicTickerResponse) error
 	bookTraderResponseHandler func(WebsocketPublicTickerResponse) error
 }
@@ -62,6 +53,23 @@ func (s *WebsocketPublicService) parseResponse(respBody []byte, response interfa
 		return err
 	}
 	return nil
+}
+
+// parseResponseTopic :
+func (s *WebsocketPublicService) parseResponseTopic(respBody []byte) (string, error) {
+	if len(respBody) == 0 {
+		return "", nil
+	}
+	resp := map[string]interface{}{}
+	if err := json.Unmarshal(respBody, &resp); err != nil {
+		return "", err
+	}
+	if topic, has := resp["topic"]; has {
+		topicParts := strings.Split(topic.(string), "-")
+		return topicParts[0], nil
+	} else {
+		return "", nil
+	}
 }
 
 // Start :
@@ -127,8 +135,13 @@ func (s *WebsocketPublicService) Run() error {
 		return err
 	}
 
-	switch s.subscribeChannel {
-	case WsPublicSubscribeChannelTicker:
+	topic, err := s.parseResponseTopic(message)
+	if err != nil {
+		return err
+	}
+
+	switch topic {
+	case MessageTopicSubscribeTicker:
 		var resp WebsocketPublicTickerResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
@@ -137,7 +150,7 @@ func (s *WebsocketPublicService) Run() error {
 		if err := s.tickerResponseHandler(resp); err != nil {
 			return err
 		}
-	case WsPublicSubscribeChannelBookTrader:
+	case MessageTopicSubscribeBookTrader:
 		// TODO
 		return nil
 	}

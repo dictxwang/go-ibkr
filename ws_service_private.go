@@ -7,18 +7,9 @@ import (
 	"github.com/gorilla/websocket"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"time"
-)
-
-type WsPrivateSubscribeChannel string
-
-const (
-	WsPrivateSubscribeChannelAccountSummary = WsPrivateSubscribeChannel("AccountSummary")
-	WsPrivateSubscribeChannelAccountLedger  = WsPrivateSubscribeChannel("AccountLedger")
-	WsPrivateSubscribeChannelOrder          = WsPrivateSubscribeChannel("Order")
-	WsPrivateSubscribeChannelPnL            = WsPrivateSubscribeChannel("PnL")
-	WsPrivateSubscribeChannelTradesData     = WsPrivateSubscribeChannel("TradesData")
 )
 
 // WebsocketPrivateServiceI :
@@ -67,13 +58,10 @@ type WebsocketPrivateServiceI interface {
 }
 
 type WebsocketPrivateService struct {
-	client            *WebSocketClient
-	connection        *websocket.Conn
-	alreadySubscribed bool
-	writeMutex        sync.Mutex
-	subscribeMutex    sync.Mutex
+	client     *WebSocketClient
+	connection *websocket.Conn
+	writeMutex sync.Mutex
 
-	subscribeChannel              WsPrivateSubscribeChannel
 	accountSummaryResponseHandler func(WebsocketPrivateAccountSummaryResponse) error
 	accountLedgerResponseHandler  func(WebsocketPrivateAccountLedgerResponse) error
 	orderResponseHandler          func(WebsocketPrivateOrderResponse) error
@@ -87,6 +75,23 @@ func (s *WebsocketPrivateService) parseResponse(respBody []byte, response interf
 		return err
 	}
 	return nil
+}
+
+// parseResponseTopic :
+func (s *WebsocketPrivateService) parseResponseTopic(respBody []byte) (string, error) {
+	if len(respBody) == 0 {
+		return "", nil
+	}
+	resp := map[string]interface{}{}
+	if err := json.Unmarshal(respBody, &resp); err != nil {
+		return "", err
+	}
+	if topic, has := resp["topic"]; has {
+		topicParts := strings.Split(topic.(string), "-")
+		return topicParts[0], nil
+	} else {
+		return "", nil
+	}
 }
 
 // Start :
@@ -150,8 +155,13 @@ func (s *WebsocketPrivateService) Run() error {
 		return err
 	}
 
-	switch s.subscribeChannel {
-	case WsPrivateSubscribeChannelAccountSummary:
+	topic, err := s.parseResponseTopic(message)
+	if err != nil {
+		return err
+	}
+
+	switch topic {
+	case MessageTopicSubscribeAccountSummary:
 		var resp WebsocketPrivateAccountSummaryResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
@@ -160,7 +170,7 @@ func (s *WebsocketPrivateService) Run() error {
 		if err := s.accountSummaryResponseHandler(resp); err != nil {
 			return err
 		}
-	case WsPrivateSubscribeChannelAccountLedger:
+	case MessageTopicSubscribeAccountLedger:
 		var resp WebsocketPrivateAccountLedgerResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
@@ -169,7 +179,7 @@ func (s *WebsocketPrivateService) Run() error {
 		if err := s.accountLedgerResponseHandler(resp); err != nil {
 			return err
 		}
-	case WsPrivateSubscribeChannelOrder:
+	case MessageTopicSubscribeOrder:
 		var resp WebsocketPrivateOrderResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
@@ -178,7 +188,7 @@ func (s *WebsocketPrivateService) Run() error {
 		if err := s.orderResponseHandler(resp); err != nil {
 			return err
 		}
-	case WsPrivateSubscribeChannelPnL:
+	case MessageTopicSubscribePnL:
 		var resp WebsocketPrivatePnLResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
@@ -187,7 +197,7 @@ func (s *WebsocketPrivateService) Run() error {
 		if err := s.pnlResponseHandler(resp); err != nil {
 			return err
 		}
-	case WsPrivateSubscribeChannelTradesData:
+	case MessageTopicSubscribeTradesData:
 		var resp WebsocketPrivateTradesDataResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
