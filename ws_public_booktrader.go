@@ -14,7 +14,7 @@ func (s *WebsocketPublicService) SubscribeBookTrader(
 	// TODO
 	return nil, nil
 }
-func (s *WebsocketPublicService) UnSubscribeBookTrader(
+func (s *WebsocketPublicService) UnsubscribeBookTrader(
 	param WebsocketPublicBookTraderParam,
 ) error {
 	// TODO

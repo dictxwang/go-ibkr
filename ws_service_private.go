@@ -23,14 +23,14 @@ type WebsocketPrivateServiceI interface {
 		WebsocketPrivateAccountSummaryParam,
 		func(WebsocketPrivateAccountSummaryResponse) error,
 	) (func() error, error)
-	UnSubscribeAccountSummary(
+	UnsubscribeAccountSummary(
 		WebsocketPrivateAccountSummaryParam,
 	) error
 	SubscribeAccountLedger(
 		WebsocketPrivateAccountLedgerParam,
 		func(WebsocketPrivateAccountLedgerResponse) error,
 	) (func() error, error)
-	UnSubscribeAccountLedger(
+	UnsubscribeAccountLedger(
 		WebsocketPrivateAccountLedgerParam,
 	) error
 
@@ -38,21 +38,21 @@ type WebsocketPrivateServiceI interface {
 		WebsocketPrivateOrderParam,
 		func(WebsocketPrivateOrderResponse) error,
 	) (func() error, error)
-	UnSubscribeOrder(
+	UnsubscribeOrder(
 		WebsocketPrivateOrderParam,
 	) error
 	SubscribePnL(
 		WebsocketPrivatePnLParam,
 		func(WebsocketPrivatePnLResponse) error,
 	) (func() error, error)
-	UnSubscribePnL(
+	UnsubscribePnL(
 		WebsocketPrivatePnLParam,
 	) error
 	SubscribeTradesData(
 		WebsocketPrivateTradesDataParam,
 		func(WebsocketPrivateTradesDataResponse) error,
 	) (func() error, error)
-	UnSubscribeTradesData(
+	UnsubscribeTradesData(
 		WebsocketPrivateTradesDataParam,
 	) error
 }

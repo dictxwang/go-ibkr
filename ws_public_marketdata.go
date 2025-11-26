@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func (s *WebsocketPublicService) UnSubscribeTicker(
-	param WebsocketPublicTickerParam,
+func (s *WebsocketPublicService) UnsubscribeMarketData(
+	param WebsocketPublicMarketDataParam,
 ) error {
 	for _, contractId := range param.ContractIds {
 		args := fmt.Sprintf("umd+%d+{}", contractId)
@@ -18,19 +18,13 @@ func (s *WebsocketPublicService) UnSubscribeTicker(
 	return nil
 }
 
-func (s *WebsocketPublicService) SubscribeTicker(
-	param WebsocketPublicTickerParam,
-	handler func(WebsocketPublicTickerResponse) error,
+func (s *WebsocketPublicService) SubscribeMarketData(
+	param WebsocketPublicMarketDataParam,
+	handler func(WebsocketPublicMarketDataResponse) error,
 ) (func() error, error) {
 
-	param.fillFields()
-	fields := make([]string, 0)
-	fields = append(fields, param.fieldBidSize)
-	fields = append(fields, param.fieldBidPrice)
-	fields = append(fields, param.fieldAskSize)
-	fields = append(fields, param.fieldAskPrice)
 	fieldsMap := map[string][]string{}
-	fieldsMap["fields"] = fields
+	fieldsMap["fields"] = param.Fields
 
 	buf, err := json.Marshal(fieldsMap)
 	if err != nil {
@@ -46,7 +40,7 @@ func (s *WebsocketPublicService) SubscribeTicker(
 		}
 	}
 
-	s.tickerResponseHandler = handler
+	s.marketDataResponseHandler = handler
 
 	return func() error {
 		for _, contractId := range param.ContractIds {
@@ -59,22 +53,12 @@ func (s *WebsocketPublicService) SubscribeTicker(
 	}, nil
 }
 
-type WebsocketPublicTickerParam struct {
-	ContractIds   []int
-	fieldBidPrice string
-	fieldBidSize  string
-	fieldAskPrice string
-	fieldAskSize  string
+type WebsocketPublicMarketDataParam struct {
+	ContractIds []int
+	Fields      []string
 }
 
-func (p *WebsocketPublicTickerParam) fillFields() {
-	p.fieldBidPrice = "84"
-	p.fieldBidSize = "88"
-	p.fieldAskPrice = "86"
-	p.fieldAskSize = "85"
-}
-
-type WebsocketPublicTickerResponse struct {
+type WebsocketPublicMarketDataResponse struct {
 	Topic                  string  `json:"topic,omitempty"`
 	ServerId               string  `json:"server_id,omitempty"`
 	ContractIdExchange     string  `json:"conidEx,omitempty"`

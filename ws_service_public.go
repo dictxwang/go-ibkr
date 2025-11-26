@@ -22,19 +22,26 @@ type WebsocketPublicServiceI interface {
 	Ping() error
 	Close() error
 
-	SubscribeTicker(
-		WebsocketPublicTickerParam,
-		func(WebsocketPublicTickerResponse) error,
+	SubscribeMarketData(
+		WebsocketPublicMarketDataParam,
+		func(WebsocketPublicMarketDataResponse) error,
 	) (func() error, error)
-	UnSubscribeTicker(
-		WebsocketPublicTickerParam,
+	UnsubscribeMarketData(
+		WebsocketPublicMarketDataParam,
+	) error
+	SubscribeHistoricalMarketData(
+		WebsocketPublicMarketDataParam,
+		func(WebsocketPublicMarketDataResponse) error,
+	) (func() error, error)
+	UnsubscribeHistoricalMarketData(
+		WebsocketPublicMarketDataParam,
 	) error
 	SubscribeBookTrader(
 		WebsocketPublicBookTraderParam,
 		func(WebsocketPublicBookTraderResponse) error,
 	) (func() error, error)
-	WebsocketPublicBookTraderParam(
-		WebsocketPublicTickerParam,
+	UnsubscribeBookTrader(
+		WebsocketPublicBookTraderParam,
 	) error
 }
 
@@ -42,9 +49,10 @@ type WebsocketPublicService struct {
 	client     *WebSocketClient
 	connection *websocket.Conn
 	writeMutex sync.Mutex
-	
-	tickerResponseHandler     func(WebsocketPublicTickerResponse) error
-	bookTraderResponseHandler func(WebsocketPublicTickerResponse) error
+
+	marketDataResponseHandler           func(WebsocketPublicMarketDataResponse) error
+	historicalMarketDataResponseHandler func(WebsocketPublicHistoricalMarketDataResponse) error
+	bookTraderResponseHandler           func(WebsocketPublicBookTraderResponse) error
 }
 
 // parseResponse :
@@ -141,13 +149,22 @@ func (s *WebsocketPublicService) Run() error {
 	}
 
 	switch topic {
-	case MessageTopicSubscribeTicker:
-		var resp WebsocketPublicTickerResponse
+	case MessageTopicSubscribeMarketData:
+		var resp WebsocketPublicMarketDataResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
 		}
 
-		if err := s.tickerResponseHandler(resp); err != nil {
+		if err := s.marketDataResponseHandler(resp); err != nil {
+			return err
+		}
+	case MessageTopicSubscribeHistoricalMarketData:
+		var resp WebsocketPublicHistoricalMarketDataResponse
+		if err := s.parseResponse(message, &resp); err != nil {
+			return err
+		}
+
+		if err := s.historicalMarketDataResponseHandler(resp); err != nil {
 			return err
 		}
 	case MessageTopicSubscribeBookTrader:

@@ -31,7 +31,7 @@ func (s *WebsocketPrivateService) SubscribeOrder(
 	// TODO
 	return nil, nil
 }
-func (s *WebsocketPrivateService) UnSubscribeOrder(
+func (s *WebsocketPrivateService) UnsubscribeOrder(
 	param WebsocketPrivatePnLParam,
 ) error {
 	// TODO
@@ -45,7 +45,7 @@ func (s *WebsocketPrivateService) SubscribeTradesData(
 	// TODO
 	return nil, nil
 }
-func (s *WebsocketPrivateService) UnSubscribeTradesData(
+func (s *WebsocketPrivateService) UnsubscribeTradesData(
 	param WebsocketPrivateTradesDataParam,
 ) error {
 	// TODO
@@ -59,7 +59,7 @@ func (s *WebsocketPrivateService) SubscribePnL(
 	// TODO
 	return nil, nil
 }
-func (s *WebsocketPrivateService) UnSubscribePnL(
+func (s *WebsocketPrivateService) UnsubscribePnL(
 	param WebsocketPrivatePnLParam,
 ) error {
 	// TODO

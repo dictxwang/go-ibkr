@@ -54,7 +54,7 @@ func (s *WebsocketPrivateService) SubscribeAccountSummary(
 		return nil
 	}, nil
 }
-func (s *WebsocketPrivateService) UnSubscribeAccountSummary(
+func (s *WebsocketPrivateService) UnsubscribeAccountSummary(
 	param WebsocketPrivateAccountSummaryParam,
 ) error {
 	args := fmt.Sprintf("usd+%s+{}", param.AccountId)
@@ -71,7 +71,7 @@ func (s *WebsocketPrivateService) SubscribeAccountLedger(
 	// TODO
 	return nil, nil
 }
-func (s *WebsocketPrivateService) UnSubscribeAccountLedger(
+func (s *WebsocketPrivateService) UnsubscribeAccountLedger(
 	param WebsocketPrivateAccountLedgerParam,
 ) error {
 	// TODO
