@@ -84,7 +84,7 @@ func (s *WebsocketPublicService) parseResponseTopic(respBody []byte) (string, er
 		return "", err
 	}
 	if topic, has := resp["topic"]; has {
-		topicParts := strings.Split(topic.(string), "-")
+		topicParts := strings.Split(topic.(string), "+")
 		return topicParts[0], nil
 	} else {
 		return "", nil
