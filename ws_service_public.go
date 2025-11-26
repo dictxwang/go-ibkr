@@ -21,6 +21,11 @@ type WebsocketPublicServiceI interface {
 	Run() error
 	Ping() error
 	Close() error
+	SetAccountUpdatesChan(channel chan *WebsocketUnsolicitedAccountUpdatesResponse)
+	SetAuthStatusChan(channel chan *WebsocketUnsolicitedAuthStatusResponse)
+	SetSystemChan(channel chan *WebsocketUnsolicitedSystemConnectionResponse)
+	SetBulletinsChan(channel chan *WebsocketUnsolicitedBulletinsResponse)
+	SetNotificationsChan(channel chan *WebsocketUnsolicitedNotificationsResponse)
 
 	SubscribeMarketData(
 		WebsocketPublicMarketDataParam,
@@ -50,6 +55,12 @@ type WebsocketPublicService struct {
 	connection *websocket.Conn
 	writeMutex sync.Mutex
 
+	accountUpdatesChan chan *WebsocketUnsolicitedAccountUpdatesResponse
+	authStatusChan     chan *WebsocketUnsolicitedAuthStatusResponse
+	systemChan         chan *WebsocketUnsolicitedSystemConnectionResponse
+	bulletinsChan      chan *WebsocketUnsolicitedBulletinsResponse
+	notificationChan   chan *WebsocketUnsolicitedNotificationsResponse
+
 	marketDataResponseHandler           func(WebsocketPublicMarketDataResponse) error
 	historicalMarketDataResponseHandler func(WebsocketPublicHistoricalMarketDataResponse) error
 	bookTraderResponseHandler           func(WebsocketPublicBookTraderResponse) error
@@ -78,6 +89,22 @@ func (s *WebsocketPublicService) parseResponseTopic(respBody []byte) (string, er
 	} else {
 		return "", nil
 	}
+}
+
+func (s *WebsocketPublicService) SetAccountUpdatesChan(channel chan *WebsocketUnsolicitedAccountUpdatesResponse) {
+	s.accountUpdatesChan = channel
+}
+func (s *WebsocketPublicService) SetAuthStatusChan(channel chan *WebsocketUnsolicitedAuthStatusResponse) {
+	s.authStatusChan = channel
+}
+func (s *WebsocketPublicService) SetSystemChan(channel chan *WebsocketUnsolicitedSystemConnectionResponse) {
+	s.systemChan = channel
+}
+func (s *WebsocketPublicService) SetBulletinsChan(channel chan *WebsocketUnsolicitedBulletinsResponse) {
+	s.bulletinsChan = channel
+}
+func (s *WebsocketPublicService) SetNotificationsChan(channel chan *WebsocketUnsolicitedNotificationsResponse) {
+	s.notificationChan = channel
 }
 
 // Start :
@@ -136,7 +163,6 @@ func (s *WebsocketPublicService) Start(ctx context.Context, errHandler ErrHandle
 
 // Run :
 func (s *WebsocketPublicService) Run() error {
-	fmt.Printf("before read message\n")
 	_, message, err := s.connection.ReadMessage()
 	fmt.Printf("after read message: %s\n", message)
 	if err != nil {
@@ -149,41 +175,89 @@ func (s *WebsocketPublicService) Run() error {
 	}
 
 	switch topic {
+	case UnsolicitedMessageTopicAccountUpdates:
+		if s.accountUpdatesChan != nil {
+			var resp WebsocketUnsolicitedAccountUpdatesResponse
+			if err := s.parseResponse(message, &resp); err != nil {
+				return err
+			}
+			s.accountUpdatesChan <- &resp
+		}
+	case UnsolicitedMessageTopicAuthStatus:
+		if s.authStatusChan != nil {
+			var resp WebsocketUnsolicitedAuthStatusResponse
+			if err := s.parseResponse(message, &resp); err != nil {
+				return err
+			}
+			s.authStatusChan <- &resp
+		}
+	case UnsolicitedMessageTopicSystemConnection:
+		if s.systemChan != nil {
+			var resp WebsocketUnsolicitedSystemConnectionResponse
+			if err := s.parseResponse(message, &resp); err != nil {
+				return err
+			}
+			s.systemChan <- &resp
+		}
+	case UnsolicitedMessageTopicBulletins:
+		if s.bulletinsChan != nil {
+			var resp WebsocketUnsolicitedBulletinsResponse
+			if err := s.parseResponse(message, &resp); err != nil {
+				return err
+			}
+			s.bulletinsChan <- &resp
+		}
+	case UnsolicitedMessageTopicNotifications:
+		if s.notificationChan != nil {
+			var resp WebsocketUnsolicitedNotificationsResponse
+			if err := s.parseResponse(message, &resp); err != nil {
+				return err
+			}
+			s.notificationChan <- &resp
+		}
 	case MessageTopicSubscribeMarketData:
 		var resp WebsocketPublicMarketDataResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
 		}
-
-		if err := s.marketDataResponseHandler(resp); err != nil {
-			return err
+		if s.marketDataResponseHandler != nil {
+			if err := s.marketDataResponseHandler(resp); err != nil {
+				return err
+			}
 		}
 	case MessageTopicSubscribeHistoricalMarketData:
 		var resp WebsocketPublicHistoricalMarketDataResponse
 		if err := s.parseResponse(message, &resp); err != nil {
 			return err
 		}
-
-		if err := s.historicalMarketDataResponseHandler(resp); err != nil {
-			return err
+		if s.historicalMarketDataResponseHandler != nil {
+			if err := s.historicalMarketDataResponseHandler(resp); err != nil {
+				return err
+			}
 		}
 	case MessageTopicSubscribeBookTrader:
-		// TODO
-		return nil
+		var resp WebsocketPublicBookTraderResponse
+		if err := s.parseResponse(message, &resp); err != nil {
+			return err
+		}
+		if s.bookTraderResponseHandler != nil {
+			if err := s.bookTraderResponseHandler(resp); err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
 
 // Ping :
 func (s *WebsocketPublicService) Ping() error {
-	// NOTE: It appears that two messages need to be sent.
-	// REF: https://github.com/hirokisan/bybit/pull/127#issuecomment-1537479346
 	if err := s.writeMessage(websocket.PingMessage, nil); err != nil {
 		return err
 	}
-	if err := s.writeMessage(websocket.TextMessage, []byte(`{"op":"ping"}`)); err != nil {
-		return err
-	}
+	//// below copy from bybit sdk, no need for ibkr
+	//if err := s.writeMessage(websocket.TextMessage, []byte(`{"op":"ping"}`)); err != nil {
+	//	return err
+	//}
 	return nil
 }
 

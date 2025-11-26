@@ -53,4 +53,10 @@ const (
 	MessageTopicUnsubscribePnL                  = "upl"
 	MessageTopicSubscribeTradesData             = "str"
 	MessageTopicUnsubscribeTradesData           = "utr"
+
+	UnsolicitedMessageTopicAccountUpdates   = "act"
+	UnsolicitedMessageTopicAuthStatus       = "sts"
+	UnsolicitedMessageTopicBulletins        = "blt"
+	UnsolicitedMessageTopicSystemConnection = "system"
+	UnsolicitedMessageTopicNotifications    = "ntf"
 )
