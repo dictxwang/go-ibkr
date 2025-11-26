@@ -59,14 +59,14 @@ type WebsocketPublicMarketDataParam struct {
 }
 
 type WebsocketPublicMarketDataResponse struct {
-	Topic                  string  `json:"topic,omitempty"`
-	ServerId               string  `json:"server_id,omitempty"`
-	ContractIdExchange     string  `json:"conidEx,omitempty"`
-	ContractId             int     `json:"conid,omitempty"`
-	UpdateTime             int64   `json:"_updated,omitempty"`
-	MarketDataAvailability string  `json:"6509,omitempty"`
-	BidSize                float64 `json:"88,omitempty"`
-	BidPrice               float64 `json:"84,omitempty"`
-	AskSize                float64 `json:"85,omitempty"`
-	AskPrice               float64 `json:"86,omitempty"`
+	Topic                  string `json:"topic,omitempty"`
+	ServerId               string `json:"server_id,omitempty"`
+	ContractIdExchange     string `json:"conidEx,omitempty"`
+	ContractId             int    `json:"conid,omitempty"`
+	UpdateTime             int64  `json:"_updated,omitempty"`
+	MarketDataAvailability string `json:"6509,omitempty"`
+	BidSize                string `json:"88,omitempty"`
+	BidPrice               string `json:"84,omitempty"`
+	AskSize                string `json:"85,omitempty"`
+	AskPrice               string `json:"86,omitempty"`
 }
