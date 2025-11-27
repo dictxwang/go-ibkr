@@ -116,12 +116,18 @@ func (c *Client) WithReferer(referer string) *Client {
 }
 
 // Request :
-func (c *Client) Request(req *http.Request, dst interface{}) (err error) {
+func (c *Client) Request(req *http.Request, dst interface{}) error {
+	_, err := c.RequestFull(req, false, dst)
+	return err
+}
+
+// RequestFull :
+func (c *Client) RequestFull(req *http.Request, conciseResponse bool, dst interface{}) (string, error) {
 	c.debugf("request: %v", req)
 	resp, err := c.httpClient.Do(req)
 	c.debugf("response: %v", resp)
 	if err != nil {
-		return err
+		return "", err
 	}
 	c.debugf("response status code: %v", resp.StatusCode)
 	defer func() {
@@ -135,26 +141,30 @@ func (c *Client) Request(req *http.Request, dst interface{}) (err error) {
 	case 200 <= resp.StatusCode && resp.StatusCode <= 299:
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return err
+			return "", err
 		}
 		fmt.Printf("response body: %+v\n", string(body))
-
-		if err := json.Unmarshal(body, &dst); err != nil {
-			return err
-		}
-
 		c.debugf("response body: %v", string(body))
-		return nil
+
+		if conciseResponse {
+			return string(body), nil
+		} else {
+			if err := json.Unmarshal(body, &dst); err != nil {
+				return string(body), err
+			} else {
+				return "", nil
+			}
+		}
 	case resp.StatusCode == http.StatusBadRequest:
-		return fmt.Errorf("%v: Need to send the request with GET / POST (must be capitalized) url=%s", ErrBadRequest, req.URL.String())
+		return "", fmt.Errorf("%v: Need to send the request with GET / POST (must be capitalized) url=%s", ErrBadRequest, req.URL.String())
 	case resp.StatusCode == http.StatusUnauthorized:
-		return fmt.Errorf("%w: invalid key/secret", ErrInvalidRequest)
+		return "", fmt.Errorf("%w: invalid key/secret", ErrInvalidRequest)
 	case resp.StatusCode == http.StatusForbidden:
-		return fmt.Errorf("%w: not permitted", ErrForbiddenRequest)
+		return "", fmt.Errorf("%w: not permitted", ErrForbiddenRequest)
 	case resp.StatusCode == http.StatusNotFound:
-		return fmt.Errorf("%w: wrong path", ErrPathNotFound)
+		return "", fmt.Errorf("%w: wrong path", ErrPathNotFound)
 	default:
-		return fmt.Errorf("unexpected status code %d", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status code %d", resp.StatusCode)
 	}
 }
 
@@ -167,6 +177,27 @@ func (c *Client) getPublic(path string, query url.Values, dst interface{}) error
 	u.RawQuery = query.Encode()
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		return err
+	}
+
+	if err := c.Request(req, &dst); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) deletePublic(path string, query url.Values, dst interface{}) error {
+
+	u, err := url.Parse(c.baseURL)
+	if err != nil {
+		return err
+	}
+	u.Path = c.endpointPrefix + path
+	u.RawQuery = query.Encode()
+
+	req, err := http.NewRequest(http.MethodDelete, u.String(), nil)
 	if err != nil {
 		return err
 	}
@@ -197,6 +228,24 @@ func (c *Client) postJSON(path string, body []byte, dst interface{}) error {
 	}
 
 	return nil
+}
+
+func (c *Client) postJSONConciseResponse(path string, body []byte) (string, error) {
+
+	u, err := url.Parse(c.baseURL)
+	if err != nil {
+		return "", err
+	}
+	u.Path = c.endpointPrefix + path
+
+	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(body))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	respBody, err := c.RequestFull(req, true, nil)
+	return respBody, err
 }
 
 func (c *Client) postForm(path string, body url.Values, dst interface{}) error {

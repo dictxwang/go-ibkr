@@ -73,7 +73,7 @@ type WebsocketPrivateTradesData struct {
 	ContractDescription2 string  `json:"contract_description_2,omitempty"`
 	SecType              string  `json:"sec_type,omitempty"`
 	ContractId           int     `json:"conid,omitempty"`
-	ConidEx              string  `json:"conidEx,omitempty"`
+	ContractIdExchange   string  `json:"conidEx,omitempty"`
 	OpenClose            string  `json:"open_close,omitempty"`
 	LiquidationTrade     string  `json:"liquidation_trade,omitempty"`
 	IsEventTrading       string  `json:"is_event_trading,omitempty"`

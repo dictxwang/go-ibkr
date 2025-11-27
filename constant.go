@@ -86,3 +86,59 @@ const (
 	OrderStatusFilterValueCancelled     = OrderStatusFilterValue("cancelled")
 	OrderStatusFilterValueWarnState     = OrderStatusFilterValue("warnState")
 )
+
+type OrderType string
+type TimeInForce string
+type IBAlgorithm string
+
+// https://www.interactivebrokers.com/campus/ibkr-api-page/order-types/
+const (
+	OrderTypeMarket               = OrderType("MKT")
+	OrderTypeMarketToLimit        = OrderType("MTL")
+	OrderTypeLimit                = OrderType("LMT")
+	OrderTypeStop                 = OrderType("STP")
+	OrderTypeRelative             = OrderType("REL")
+	OrderTypeBoxTop               = OrderType("BOX TOP")
+	OrderTypeLimitIfTouched       = OrderType("LIT")
+	OrderTypeLimitOnClose         = OrderType("LOC")
+	OrderTypeMarketIfTouch        = OrderType("MIT")
+	OrderTypeMarketOnClose        = OrderType("MOC")
+	OrderTypeMarketWithProtection = OrderType("MKT PRT")
+	OrderTypePassiveRelative      = OrderType("PASSV REL")
+	OrderTypePeggedToStock        = OrderType("PEG STK")
+	OrderTypePeggedToBenchmark    = OrderType("PEG BENCH")
+	OrderTypePeggedToMarket       = OrderType("PEG MKT")
+	OrderTypeStopLimit            = OrderType("STP LMT")
+	OrderTypeStopWithProtection   = OrderType("STP PRT")
+	OrderTypeRelativeLimitCombo   = OrderType("REL + LMT")
+	OrderTypeRelativeMarketCombo  = OrderType("REL + MKT")
+)
+
+const (
+	TimeInForceDAY = TimeInForce("DAY")
+	TimeInForceGTC = TimeInForce("GTC")
+	TimeInForceIOC = TimeInForce("IOC")
+	TimeInForceOPG = TimeInForce("OPG")
+	TimeInForceGTD = TimeInForce("GTD")
+	TimeInForceFOK = TimeInForce("FOK")
+	TimeInForceDTC = TimeInForce("DTC")
+)
+
+const (
+	IBAlgorithmAccumulateDistribute        = IBAlgorithm("AD")
+	IBAlgorithmAccumulateDistributeAlt     = IBAlgorithm("AccuDistr")
+	IBAlgorithmAccumulateAdaptive          = IBAlgorithm("Adaptive")
+	IBAlgorithmArrivalPrice                = IBAlgorithm("ArrivalPx")
+	IBAlgorithmBalanceImpactRisk           = IBAlgorithm("BalanceImpactRisk")
+	IBAlgorithmClosePrice                  = IBAlgorithm("ClosePx")
+	IBAlgorithmDarkIce                     = IBAlgorithm("DarkIce")
+	IBAlgorithmMiddlePrice                 = IBAlgorithm("MIDPRICE")
+	IBAlgorithmMinimiseImpact              = IBAlgorithm("MinImpact")
+	IBAlgorithmPercentageOfVolume          = IBAlgorithm("PctVol")
+	IBAlgorithmPriceVariantPercentage      = IBAlgorithm("PctVolPx")
+	IBAlgorithmPricePriceVariantPercentage = IBAlgorithm("PctVolPx")
+	IBAlgorithmSizeVariantPercentage       = IBAlgorithm("PctVolSz")
+	IBAlgorithmTimeVariantPercentage       = IBAlgorithm("PctVolTm")
+	IBAlgorithmTWAP                        = IBAlgorithm("Twap")
+	IBAlgorithmVWAP                        = IBAlgorithm("Vwap")
+)
