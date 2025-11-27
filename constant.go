@@ -154,3 +154,20 @@ const (
 	TrailingTypeAmount  = TrailingType("amt")
 	TrailingTypePercent = TrailingType("%")
 )
+
+type PositionSide string
+type SortDirection string
+type PeriodType string
+
+const (
+	SortDirectionAscending  = SortDirection("a")
+	SortDirectionDescending = SortDirection("d")
+
+	PositionSidePut  = PositionSide("Put")
+	PositionSideCall = PositionSide("Call")
+
+	PeriodTypeOneDay    = PeriodType("1D")
+	PeriodTypeSevenDays = PeriodType("7D")
+	PeriodTypeOneWeek   = PeriodType("1W")
+	PeriodTypeOneMonth  = PeriodType("1M")
+)
