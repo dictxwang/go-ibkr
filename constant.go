@@ -1,6 +1,13 @@
 package ibkr
 
+type OrderSide string
 type ExchangeType string
+type SecurityType string
+
+const (
+	OrderSideBuy  = OrderSide("BUY")
+	OrderSideSell = OrderSide("SELL")
+)
 
 const (
 	ExchangeTypeNYSE   = ExchangeType("NYSE")
@@ -19,8 +26,6 @@ const (
 	ExchangeTypeSGX    = ExchangeType("SGX")
 	ExchangeTypeTSEJ   = ExchangeType("TSEJ")
 )
-
-type SecurityType string
 
 const (
 	SecurityTypeStock                 = SecurityType("STK")
@@ -90,6 +95,7 @@ const (
 type OrderType string
 type TimeInForce string
 type IBAlgorithm string
+type TrailingType string
 
 // https://www.interactivebrokers.com/campus/ibkr-api-page/order-types/
 const (
@@ -122,6 +128,7 @@ const (
 	TimeInForceGTD = TimeInForce("GTD")
 	TimeInForceFOK = TimeInForce("FOK")
 	TimeInForceDTC = TimeInForce("DTC")
+	TimeInForcePAX = TimeInForce("PAX")
 )
 
 const (
@@ -141,4 +148,9 @@ const (
 	IBAlgorithmTimeVariantPercentage       = IBAlgorithm("PctVolTm")
 	IBAlgorithmTWAP                        = IBAlgorithm("Twap")
 	IBAlgorithmVWAP                        = IBAlgorithm("Vwap")
+)
+
+const (
+	TrailingTypeAmount  = TrailingType("amt")
+	TrailingTypePercent = TrailingType("%")
 )

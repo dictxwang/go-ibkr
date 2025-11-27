@@ -13,7 +13,7 @@ type WebsocketPrivateOrderParam struct {
 type WebsocketPrivateOrder struct {
 	AccountId          string  `json:"acct,omitempty"`
 	ContractId         int     `json:"conid,omitempty"`
-	OrderId            int     `json:"orderId,omitempty"`
+	OrderId            int64   `json:"orderId,omitempty"`
 	CashCcy            string  `json:"cashCcy,omitempty"`
 	SizeAndFills       string  `json:"sizeAndFills,omitempty"`
 	OrderDesc          string  `json:"orderDesc,omitempty"`

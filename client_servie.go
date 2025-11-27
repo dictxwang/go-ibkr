@@ -5,6 +5,7 @@ type ClientServiceI interface {
 	Session() SessionServiceI
 	Account() AccountServiceI
 	Contract() ContractServiceI
+	Order() OrdersServiceI
 }
 
 // ClientService :
@@ -23,6 +24,10 @@ func (s *ClientService) Account() AccountServiceI {
 
 func (s *ClientService) Contract() ContractServiceI {
 	return &ContractService{s.client}
+}
+
+func (s *ClientService) Order() OrdersServiceI {
+	return &OrdersService{s.client}
 }
 
 func (c *Client) Service() ClientServiceI {
