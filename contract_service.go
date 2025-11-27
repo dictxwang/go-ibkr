@@ -96,7 +96,7 @@ type SearchContractBySymbolQuery struct {
 }
 
 type SearchContractBySymbolItem struct {
-	ContractId    int     `json:"conid"`
+	ContractId    string  `json:"conid"`
 	CompanyHeader string  `json:"companyHeader"`
 	CompanyName   string  `json:"companyName"`
 	Symbol        string  `json:"symbol"`

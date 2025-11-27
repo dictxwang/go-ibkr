@@ -150,6 +150,14 @@ const (
 	IBAlgorithmVWAP                        = IBAlgorithm("Vwap")
 )
 
+type AdaptivePriority string
+
+const (
+	AdaptivePriorityUrgent  = AdaptivePriority("Urgent")
+	AdaptivePriorityNormal  = AdaptivePriority("Normal")
+	AdaptivePriorityPatient = AdaptivePriority("Patient")
+)
+
 const (
 	TrailingTypeAmount  = TrailingType("amt")
 	TrailingTypePercent = TrailingType("%")
