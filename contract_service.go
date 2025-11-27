@@ -95,14 +95,20 @@ type SearchContractBySymbolQuery struct {
 	SecurityType *SecurityType
 }
 
+type ContractSection struct {
+	SecType    string `json:"secType"`
+	Exchange   string `json:"exchange,omitempty"`
+	ContractId string `json:"conid,omitempty"`
+	Months     string `json:"months,omitempty"`
+}
 type SearchContractBySymbolItem struct {
-	ContractId    string  `json:"conid"`
-	CompanyHeader string  `json:"companyHeader"`
-	CompanyName   string  `json:"companyName"`
-	Symbol        string  `json:"symbol"`
-	Description   *string `json:"description,omitempty"`
-	Restricted    *bool   `json:"restricted"`
-	SecType       string  `json:"secType"`
+	ContractId    string            `json:"conid"`
+	CompanyHeader string            `json:"companyHeader"`
+	CompanyName   string            `json:"companyName"`
+	Symbol        string            `json:"symbol"`
+	Description   *string           `json:"description,omitempty"`
+	Restricted    *bool             `json:"restricted"`
+	Sections      []ContractSection `json:"sections"`
 }
 
 type ContractRuleOrderDefaultItem struct {
