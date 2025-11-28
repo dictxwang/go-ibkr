@@ -12,7 +12,7 @@ type PortfolioServiceI interface {
 	GetSpecificAccount(accountId string) (*PortfolioAccountInfo, error)
 	GetCombinationPositions(accountId string) (*[]CombinationPositionItem, error)
 	GetPositions(param GetPositionParam) (*[]PositionInfo, error)
-	GetPositionsNew(param GetPositionParam) (*[]PositionInfo, error)
+	GetPositionsNew(param GetPositionParam) (*[]PositionNewInfo, error)
 	GetPositionByContractId(contractId int) (*PositionInfo, error)
 }
 
@@ -110,9 +110,9 @@ func (s *PortfolioService) GetPositions(param GetPositionParam) (*[]PositionInfo
 	return &res, nil
 }
 
-func (s *PortfolioService) GetPositionsNew(param GetPositionParam) (*[]PositionInfo, error) {
+func (s *PortfolioService) GetPositionsNew(param GetPositionParam) (*[]PositionNewInfo, error) {
 
-	var res []PositionInfo
+	var res []PositionNewInfo
 
 	query := url.Values{}
 	if param.Model != "" {
@@ -128,7 +128,7 @@ func (s *PortfolioService) GetPositionsNew(param GetPositionParam) (*[]PositionI
 		query.Add("period", string(*param.Period))
 	}
 
-	if err := s.client.getPublic(fmt.Sprintf("/portfolio2/%s/positions/%d", param.AccountId, param.PageId), query, &res); err != nil {
+	if err := s.client.getPublic(fmt.Sprintf("/portfolio2/%s/positions", param.AccountId), query, &res); err != nil {
 		return nil, err
 	}
 
