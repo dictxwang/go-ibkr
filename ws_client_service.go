@@ -14,8 +14,8 @@ import (
 type WebsocketClientServiceI interface {
 	Public(sessionToken string) (*WebsocketPublicService, error)
 	PublicWithSourceIP(sessionToken string, sourceIP string) (*WebsocketPublicService, error)
-	Private(sessionToken string) (*WebsocketPublicService, error)
-	PrivateWithSourceIP(sessionToken string, sourceIP string) (*WebsocketPublicService, error)
+	Private(sessionToken string) (*WebsocketPrivateService, error)
+	PrivateWithSourceIP(sessionToken string, sourceIP string) (*WebsocketPrivateService, error)
 }
 
 // WebsocketClientService :
