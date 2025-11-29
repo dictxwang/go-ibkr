@@ -104,7 +104,7 @@ func (s *OrdersService) RespondServerPrompt(param RespondServerPromptParam) (*Re
 
 type PlaceOrderParam struct {
 	AccountId                  string                 `json:"acctId"`
-	ContractId                 string                 `json:"conid"`
+	ContractId                 int                    `json:"conid"`
 	ContractIdExchange         string                 `json:"conidex"`
 	ManualIndicator            bool                   `json:"manualIndicator"`
 	ExternalOperator           string                 `json:"extOperator,omitempty"`
