@@ -10,7 +10,7 @@ type PortfolioServiceI interface {
 	GetSubAccounts() (*[]PortfolioAccountInfo, error)
 	GetSubAccountsWithLargeAccountStructures() (*[]PortfolioAccountInfo, error)
 	GetSpecificAccount(accountId string) (*PortfolioAccountInfo, error)
-	GetCombinationPositions(accountId string) (*[]CombinationPositionItem, error)
+	GetCombinationPositions(accountId string, nocache bool) (*[]CombinationPositionItem, error)
 	GetPositions(param GetPositionParam) (*[]PositionInfo, error)
 	GetPositionsNew(param GetPositionParam) (*[]PositionNewInfo, error)
 	GetPositionByContractId(contractId int) (*PositionInfo, error)
@@ -72,11 +72,12 @@ func (s *PortfolioService) GetSpecificAccount(accountId string) (*PortfolioAccou
 	return &res, nil
 }
 
-func (s *PortfolioService) GetCombinationPositions(accountId string) (*[]CombinationPositionItem, error) {
+func (s *PortfolioService) GetCombinationPositions(accountId string, nocache bool) (*[]CombinationPositionItem, error) {
 
 	var res []CombinationPositionItem
 
 	param := url.Values{}
+	param.Add("nocache", fmt.Sprintf("%t", nocache))
 
 	if err := s.client.getPublic(fmt.Sprintf("/portfolio/%s/combo/positions", accountId), param, &res); err != nil {
 		return nil, err
