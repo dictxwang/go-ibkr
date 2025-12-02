@@ -11,7 +11,7 @@ import (
 type OrdersServiceI interface {
 	PlaceOrder(orders []PlaceOrderParam) (*PlaceOrderResponse, error)
 	CancelOrder(param CancelOrderParam) (*CancelOrderResponse, error)
-	PlaceOrderReplyConfirmation(param PlaceOrderReplyConfirmationParam) (*[]PlaceOrderReplyConfirmationResponse, error)
+	PlaceOrderReplyConfirmation(param PlaceOrderReplyConfirmationParam) (*PlaceOrderReplyConfirmationResponse, error)
 	RespondServerPrompt(param RespondServerPromptParam) (*RespondServerPromptResponse, error)
 }
 
@@ -75,16 +75,31 @@ func (s *OrdersService) CancelOrder(param CancelOrderParam) (*CancelOrderRespons
 	return &resp, nil
 }
 
-func (s *OrdersService) PlaceOrderReplyConfirmation(param PlaceOrderReplyConfirmationParam) (*[]PlaceOrderReplyConfirmationResponse, error) {
+func (s *OrdersService) PlaceOrderReplyConfirmation(param PlaceOrderReplyConfirmationParam) (*PlaceOrderReplyConfirmationResponse, error) {
 
-	var resp []PlaceOrderReplyConfirmationResponse
 	body, err := json.Marshal(param)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := s.client.postJSON(fmt.Sprintf("/iserver/reply/%s", param.ReplyId), body, &resp); err != nil {
+	responseBytes, err := s.client.postJSONConciseResponse(fmt.Sprintf("/iserver/reply/%s", param.ReplyId), body)
+	if err != nil {
 		return nil, err
+	}
+	var resp PlaceOrderReplyConfirmationResponse
+	if strings.HasPrefix(string(responseBytes), "{") {
+		err := json.Unmarshal(responseBytes, &resp)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		var results []PlaceOrderNormalResult
+		err := json.Unmarshal(responseBytes, &results)
+		if err != nil {
+			return nil, err
+		} else {
+			resp.NormalResults = results
+		}
 	}
 	return &resp, nil
 }
@@ -179,7 +194,8 @@ type PlaceOrderReplyConfirmationParam struct {
 }
 
 type PlaceOrderReplyConfirmationResponse struct {
-	NormalResults []PlaceOrderNormalResult
+	NormalResults []PlaceOrderNormalResult `json:"-"`
+	Error         string                   `json:"error,omitempty"`
 }
 
 type RespondServerPromptParam struct {
