@@ -9,7 +9,7 @@ import (
 )
 
 type OrdersServiceI interface {
-	PlaceOrder(params []PlaceOrderParam) (*PlaceOrderResponse, error)
+	PlaceOrder(orders []PlaceOrderParam) (*PlaceOrderResponse, error)
 	CancelOrder(param CancelOrderParam) (*CancelOrderResponse, error)
 	PlaceOrderReplyConfirmation(param PlaceOrderReplyConfirmationParam) (*[]PlaceOrderReplyConfirmationResponse, error)
 	RespondServerPrompt(param RespondServerPromptParam) (*RespondServerPromptResponse, error)
@@ -19,17 +19,19 @@ type OrdersService struct {
 	client *Client
 }
 
-func (s *OrdersService) PlaceOrder(params []PlaceOrderParam) (*PlaceOrderResponse, error) {
-	if len(params) == 0 {
+func (s *OrdersService) PlaceOrder(orders []PlaceOrderParam) (*PlaceOrderResponse, error) {
+	if len(orders) == 0 {
 		return nil, errors.New("require order params")
 	}
 
+	params := map[string][]PlaceOrderParam{}
+	params["orders"] = orders
 	body, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
 	}
 
-	responseBytes, err := s.client.postJSONConciseResponse(fmt.Sprintf("/iserver/account/%s/orders", params[0].AccountId), body)
+	responseBytes, err := s.client.postJSONConciseResponse(fmt.Sprintf("/iserver/account/%s/orders", orders[0].AccountId), body)
 	if err != nil {
 		return nil, err
 	}
