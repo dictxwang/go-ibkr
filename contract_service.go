@@ -236,7 +236,7 @@ type DisplayRule struct {
 }
 
 type SearchSecurityDefinitionItem struct {
-	Conid           int             `json:"conid"`
+	ContractId      int             `json:"conid"`
 	Currency        string          `json:"currency"`
 	Time            int             `json:"time"`
 	ChineseName     string          `json:"chineseName"`
@@ -253,7 +253,7 @@ type SearchSecurityDefinitionItem struct {
 	SectorGroup     string          `json:"sectorGroup"`
 	Strike          string          `json:"strike"`
 	Ticker          string          `json:"ticker"`
-	UndConid        int             `json:"undConid"`
+	UndContractId   int             `json:"undConid"`
 	Multiplier      float64         `json:"multiplier"`
 	Type            string          `json:"type"`
 	HasOptions      bool            `json:"hasOptions"`
