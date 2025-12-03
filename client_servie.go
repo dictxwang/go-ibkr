@@ -6,6 +6,7 @@ type ClientServiceI interface {
 	Account() AccountServiceI
 	Contract() ContractServiceI
 	Order() OrdersServiceI
+	OrderMonitoring() OrderMonitoringServiceI
 	Portfolio() PortfolioServiceI
 }
 
@@ -32,6 +33,11 @@ func (s *ClientService) Contract() ContractServiceI {
 // Order :
 func (s *ClientService) Order() OrdersServiceI {
 	return &OrdersService{s.client}
+}
+
+// OrderMonitoring :
+func (s *ClientService) OrderMonitoring() OrderMonitoringServiceI {
+	return &OrderMonitoringService{s.client}
 }
 
 // Portfolio :
