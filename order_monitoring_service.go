@@ -9,10 +9,26 @@ import (
 type OrderMonitoringServiceI interface {
 	GetLiveOrders(param GetLiveOrdersParam) (*GetLiveOrdersResponse, error)
 	GetTrades(param GetTradesParam) (*[]TradeItem, error)
+	GetStatus(orderId int) (*OrderStatusItem, error)
 }
 
 type OrderMonitoringService struct {
 	client *Client
+}
+
+func (s *OrderMonitoringService) GetStatus(orderId int) (*OrderStatusItem, error) {
+
+	var (
+		res OrderStatusItem
+	)
+
+	urlParam := url.Values{}
+
+	if err := s.client.getPublic(fmt.Sprintf("/iserver/account/order/status/%d", orderId), urlParam, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func (s *OrderMonitoringService) GetTrades(param GetTradesParam) (*[]TradeItem, error) {
@@ -53,6 +69,46 @@ func (s *OrderMonitoringService) GetLiveOrders(param GetLiveOrdersParam) (*GetLi
 	}
 
 	return &res, nil
+}
+
+type OrderStatusItem struct {
+	RequestId                    string  `json:"request_id,omitempty"`
+	OrderId                      int64   `json:"order_id,omitempty"`
+	ContractIdExchange           string  `json:"conidex,omitempty"`
+	ContractId                   int     `json:"conid,omitempty"`
+	Symbol                       string  `json:"symbol,omitempty"`
+	Side                         string  `json:"side,omitempty"`
+	ContractDescription1         string  `json:"contract_description_1,omitempty"`
+	ListingExchange              string  `json:"listing_exchange,omitempty"`
+	CompanyName                  string  `json:"company_name,omitempty"`
+	Size                         float64 `json:"size,omitempty"`
+	TotalSize                    float64 `json:"total_size,omitempty"`
+	Currency                     string  `json:"currency,omitempty"`
+	AccountId                    string  `json:"account,omitempty"`
+	OrderType                    string  `json:"order_type,omitempty"`
+	CumFill                      string  `json:"cum_fill,omitempty"`
+	OrderStatus                  string  `json:"order_status,omitempty"`
+	OrderCcpStatus               string  `json:"order_ccp_status,omitempty"`
+	OrderStatusDescription       string  `json:"order_status_description,omitempty"`
+	TimeInFore                   string  `json:"tif,omitempty"`
+	BgColor                      string  `json:"bg_color,omitempty"`
+	FgColor                      string  `json:"fg_color,omitempty"`
+	OrderNotEditable             bool    `json:"order_not_editable"`
+	CannotCancelOrder            bool    `json:"cannot_cancel_order"`
+	DeactivateOrder              bool    `json:"deactivate_order"`
+	SecType                      string  `json:"sec_type,omitempty"`
+	AvailableChartPeriods        string  `json:"available_chart_periods,omitempty"`
+	OrderDescription             string  `json:"order_description,omitempty"`
+	OrderDescriptionWithContract string  `json:"order_description_with_contract,omitempty"`
+	AlertActive                  int     `json:"alert_active,omitempty"`
+	ChildOrderType               string  `json:"child_order_type,omitempty"`
+	OrderClearingAccount         string  `json:"order_clearing_account,omitempty"`
+	SizeAndFills                 string  `json:"size_and_fills,omitempty"`
+	ExitStrategyDisplayPrice     string  `json:"exit_strategy_display_price,omitempty"`
+	ExitStrategyChartDescription string  `json:"exit_strategy_chart_description,omitempty"`
+	AveragePrice                 string  `json:"average_price,omitempty"`
+	AllowedDuplicateOpposite     string  `json:"allowed_duplicate_opposite,omitempty"`
+	OrderTime                    string  `json:"order_time,omitempty"`
 }
 
 type GetTradesParam struct {
@@ -98,7 +154,7 @@ type GetLiveOrdersParam struct {
 
 type LiveOrderItem struct {
 	AccountId          string  `json:"acct"`
-	ContractIdExchange string  `json:"conidEx,omitempty"`
+	ContractIdExchange string  `json:"conidex,omitempty"`
 	ContractId         int     `json:"conid,omitempty"`
 	OrderId            int64   `json:"orderId,omitempty"`
 	CashCcy            string  `json:"cashCcy,omitempty"`
@@ -116,13 +172,15 @@ type LiveOrderItem struct {
 	OrigOrderType      string  `json:"origOrderType,omitempty"`
 	SupportsTaxOpt     string  `json:"supportsTaxOpt,omitempty"`
 	LastExecutionTime  string  `json:"lastExecutionTime"`
+	LastExecutionTimeR int64   `json:"lastExecutionTime_r"`
 	OrderType          string  `json:"orderType"`
 	BgColor            string  `json:"bgColor,omitempty"`
 	FgColor            string  `json:"fgColor,omitempty"`
 	OrderRef           string  `json:"order_ref,omitempty"` // User defined string used to identify the order. Value is set using “cOID” field while placing an order.
 	TimeInForce        string  `json:"timeInForce,omitempty"`
-	Side               string  `json:"side,omitempty"`
-	AveragePrice       float64 `json:"avgPrice,omitempty"`
+
+	Side         string  `json:"side,omitempty"`
+	AveragePrice float64 `json:"avgPrice,omitempty"`
 }
 
 type GetLiveOrdersResponse struct {

@@ -179,3 +179,11 @@ const (
 	PeriodTypeOneWeek   = PeriodType("1W")
 	PeriodTypeOneMonth  = PeriodType("1M")
 )
+
+type ChildOrderType string
+
+const (
+	ChildOrderTypeAttached  = ChildOrderType("A")
+	ChildOrderTypeBetaHedge = ChildOrderType("B")
+	ChildOrderTypeNoChild   = ChildOrderType("0")
+)
