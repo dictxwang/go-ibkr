@@ -86,7 +86,7 @@ type OrderStatusItem struct {
 	Currency                     string  `json:"currency,omitempty"`
 	AccountId                    string  `json:"account,omitempty"`
 	OrderType                    string  `json:"order_type,omitempty"`
-	CumFill                      string  `json:"cum_fill,omitempty"`
+	CumulativeFill               string  `json:"cum_fill,omitempty"`
 	OrderStatus                  string  `json:"order_status,omitempty"`
 	OrderCcpStatus               string  `json:"order_ccp_status,omitempty"`
 	OrderStatusDescription       string  `json:"order_status_description,omitempty"`

@@ -156,7 +156,26 @@ func (c *Client) RequestFull(req *http.Request, conciseResponse bool, dst interf
 			}
 		}
 	case resp.StatusCode == http.StatusBadRequest:
-		return nil, fmt.Errorf("%v: Need to send the request with GET / POST (must be capitalized) url=%s", ErrBadRequest, req.URL.String())
+		if req.Method == http.MethodDelete {
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			fmt.Printf("response body: %+v\n", string(body))
+			c.debugf("response body: %v", string(body))
+
+			if conciseResponse {
+				return body, nil
+			} else {
+				if err := json.Unmarshal(body, &dst); err != nil {
+					return body, err
+				} else {
+					return nil, nil
+				}
+			}
+		} else {
+			return nil, fmt.Errorf("%v: Need to send the request with GET / POST (must be capitalized) url=%s", ErrBadRequest, req.URL.String())
+		}
 	case resp.StatusCode == http.StatusUnauthorized:
 		return nil, fmt.Errorf("%w: invalid key/secret", ErrInvalidRequest)
 	case resp.StatusCode == http.StatusForbidden:
