@@ -219,7 +219,7 @@ type CombinationPositionItem struct {
 
 type PositionNewInfo struct {
 	Position      float64 `json:"position"`
-	ContractId    int     `json:"conid"`
+	ContractId    string  `json:"conid"`
 	AverageCost   float64 `json:"avgCost"`
 	AveragePrice  float64 `json:"avgPrice"`
 	Currency      string  `json:"currency"`
