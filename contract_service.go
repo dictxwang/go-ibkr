@@ -107,7 +107,7 @@ type SearchContractBySymbolItem struct {
 	CompanyName   string            `json:"companyName"`
 	Symbol        string            `json:"symbol"`
 	Description   *string           `json:"description,omitempty"`
-	Restricted    *bool             `json:"restricted"`
+	Restricted    *string           `json:"restricted,omitempty"`
 	Sections      []ContractSection `json:"sections"`
 }
 
