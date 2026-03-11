@@ -33,7 +33,7 @@ const (
 	SecurityTypeFuture                = SecurityType("FUT")
 	SecurityTypeContractForDifference = SecurityType("CFD")
 	SecurityTypeWarrant               = SecurityType("WAR")
-	SecurityTypeForex                 = SecurityType("SWP")
+	SecurityTypeForex                 = SecurityType("CASH")
 	SecurityTypeMutualFund            = SecurityType("FND")
 	SecurityTypeBond                  = SecurityType("BND")
 	SecurityTypeInterCommoditySpreads = SecurityType("ICS")
