@@ -14,6 +14,7 @@ type PortfolioServiceI interface {
 	GetPositions(param GetPositionParam) (*[]PositionInfo, error)
 	GetPositionsNew(param GetPositionParam) (*[]PositionNewInfo, error)
 	GetPositionByContractId(contractId int) (*PositionInfo, error)
+	GetLedger(accountId string) (*[]AccountLedgerItem, error)
 }
 
 type PortfolioService struct {
@@ -149,6 +150,19 @@ func (s *PortfolioService) GetPositionByContractId(contractId int) (*PositionInf
 	return &res, nil
 }
 
+func (s *PortfolioService) GetLedger(accountId string) (*[]AccountLedgerItem, error) {
+
+	var res []AccountLedgerItem
+
+	query := url.Values{}
+
+	if err := s.client.getPublic(fmt.Sprintf("/portfolio/%s/ledger", accountId), query, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 type PortfolioAccountParent struct {
 	MoneyManagerClientAccount []string `json:"mmc"`
 	AccountId                 string   `json:"accountId"`           // Account Number for Money Manager Client
@@ -193,6 +207,26 @@ type GetPositionParam struct {
 	Sort      string         `json:"sort"`
 	Direction *SortDirection `json:"direction"`
 	Period    *PeriodType    `json:"period"`
+}
+
+type AccountLedgerItem struct {
+	AcctCode string `json:"acctcode"`
+	CashBalance float64 `json:"cashbalance"`
+	Currency string `json:"currency"`
+	ExchangeRate float64 `json:"exchangerate"`
+	FutureMarketValue float64 `json:"futuremarketvalue"`
+	FutureOptionMarketValue float64 `json:"futureoptionmarketvalue"`
+	FuturesOnlyPnl float64 `json:"futuresonlypnl"`
+	Interest float64 `json:"interest"`
+	NetLiquidationValue float64 `json:"netliquidationvalue"`
+	RealizedPnl float64 `json:"realizedpnl"`
+	SettledCash float64 `json:"settledcash"`
+	StockMarketValue float64 `json:"stockmarketvalue"`
+	StockOptionMarketValue float64 `json:"stockoptionmarketvalue"`
+	TbillsMarketValue float64 `json:"tbillsmarketvalue"`
+	TbondsMarketValue float64 `json:"tbondsmarketvalue"`
+	Timestamp int64 `json:"timestamp"`
+	UnrealizedPnl float64 `json:"unrealizedpnl"`
 }
 
 type PositionInfo struct {
