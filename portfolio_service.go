@@ -14,7 +14,7 @@ type PortfolioServiceI interface {
 	GetPositions(param GetPositionParam) (*[]PositionInfo, error)
 	GetPositionsNew(param GetPositionParam) (*[]PositionNewInfo, error)
 	GetPositionByContractId(contractId int) (*PositionInfo, error)
-	GetLedger(accountId string) (*[]AccountLedgerItem, error)
+	GetLedger(accountId string) (*map[string]AccountLedgerItem, error)
 }
 
 type PortfolioService struct {
@@ -150,9 +150,9 @@ func (s *PortfolioService) GetPositionByContractId(contractId int) (*PositionInf
 	return &res, nil
 }
 
-func (s *PortfolioService) GetLedger(accountId string) (*[]AccountLedgerItem, error) {
+func (s *PortfolioService) GetLedger(accountId string) (*map[string]AccountLedgerItem, error) {
 
-	var res []AccountLedgerItem
+	var res map[string]AccountLedgerItem
 
 	query := url.Values{}
 
