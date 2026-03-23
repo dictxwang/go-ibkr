@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 const (
@@ -66,6 +67,9 @@ func NewClient(restBaseUrl, restEndpointPrefix string, skipTlsVerify bool) *Clie
 	} else {
 		httpClient = &http.Client{}
 	}
+
+	// Default timeout
+	httpClient.Timeout = time.Second * 15
 
 	return &Client{
 		httpClient:     httpClient,
