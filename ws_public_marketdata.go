@@ -3,6 +3,7 @@ package ibkr
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -68,4 +69,8 @@ type WebsocketPublicMarketDataResponse struct {
 	BidPrice               string `json:"84,omitempty"`
 	AskSize                string `json:"85,omitempty"`
 	AskPrice               string `json:"86,omitempty"`
+	LastPrice              string `json:"31,omitempty"`
+	LastSize               string `json:"7059,omitempty"`
+	VolumeOfDay            string `json:"87,omitempty"`
+	VolumeLongOfDay        string `json:"7762,omitempty"`
 }
