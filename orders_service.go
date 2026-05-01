@@ -13,6 +13,7 @@ type OrdersServiceI interface {
 	CancelOrder(param CancelOrderParam) (*CancelOrderResponse, error)
 	PlaceOrderReplyConfirmation(param PlaceOrderReplyConfirmationParam) (*PlaceOrderReplyConfirmationResponse, error)
 	RespondServerPrompt(param RespondServerPromptParam) (*RespondServerPromptResponse, error)
+	SuppressMessages(messageIds []string) (*SuppressMessagesResponse, error)
 }
 
 type OrdersService struct {
@@ -119,6 +120,27 @@ func (s *OrdersService) RespondServerPrompt(param RespondServerPromptParam) (*Re
 	return &resp, nil
 }
 
+func (s *OrdersService) SuppressMessages(messageIds []string) (*SuppressMessagesResponse, error) {
+	param := map[string]interface{}{}
+	param["messageIds"] = messageIds
+	body, err := json.Marshal(param)
+	if err != nil {
+		return nil, err
+	}
+
+	responseBytes, err := s.client.postJSONConciseResponse("/iserver/questions/suppress", body)
+	if err != nil {
+		return nil, err
+	}
+	var resp SuppressMessagesResponse
+	err = json.Unmarshal(responseBytes, &resp)
+	if err != nil {
+		return nil, err
+	} else {
+		return &resp, nil
+	}
+}
+
 type PlaceOrderParam struct {
 	AccountId                  string                 `json:"acctId"`
 	ContractId                 int                    `json:"conid"`
@@ -206,4 +228,8 @@ type RespondServerPromptParam struct {
 
 type RespondServerPromptResponse struct {
 	Result string
+}
+
+type SuppressMessagesResponse struct {
+	Status string
 }
