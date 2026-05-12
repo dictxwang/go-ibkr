@@ -3,6 +3,7 @@ package ibkr
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -43,6 +44,44 @@ type WebsocketPrivateOrderResponse struct {
 	Snapshot bool                    `json:"snapshot,omitempty"`
 }
 
+type WebsocketPrivateOrderV2 struct {
+	AccountId          string  `json:"acct,omitempty"`
+	Exchange           string  `json:"exchange,omitempty"`
+	ContractIdExchange int     `json:"conidex,omitempty"`
+	ContractId         int     `json:"conid,omitempty"`
+	Account            string `json:"account,omitempty"`
+	OrderId            int64   `json:"orderId,omitempty"`
+	CashCcy            string  `json:"cashCcy,omitempty"`
+	SizeAndFills       string  `json:"sizeAndFills,omitempty"`
+	OrderDesc          string  `json:"orderDesc,omitempty"`
+	Description1       string  `json:"description1,omitempty"`
+	Ticker             string  `json:"ticker,omitempty"`
+	SecurityType       string  `json:"secType,omitempty"`
+	ListingExchange    string  `json:"listingExchange,omitempty"`
+	RemainingQuantity  float64 `json:"remainingQuantity,omitempty"`
+	FilledQuantity     float64 `json:"filledQuantity,omitempty"`
+	TotalSize          float64 `json:"totalSize,omitempty"`
+	CompanyName        string  `json:"companyName,omitempty"`
+	Status             string  `json:"status,omitempty"`
+	OrderCcpStatus     string  `json:"order_ccp_status,omitempty"`
+	OrigOrderType      string  `json:"origOrderType,omitempty"`
+	SupportsTaxOpt     string  `json:"supportsTaxOpt,omitempty"`
+	LastExecutionTime  string  `json:"lastExecutionTime,omitempty"`
+	LastExecutionTimeR int64   `json:"lastExecutionTime_r,omitempty"` // Returns the epoch time of the most recent execution on the order.
+	OrderType          string  `json:"orderType,omitempty"`
+	BgColor            string  `json:"bgColor,omitempty"`
+	FgColor            string  `json:"fgColor,omitempty"`
+	OrderRef           string  `json:"order_ref,omitempty"`
+	IsEventTrading     string  `json:"isEventTrading,omitempty"`
+	Price              string  `json:"price,omitempty"`
+	TimeInForce        string  `json:"timeInForce,omitempty"`
+	Side               string  `json:"side,omitempty"`
+}
+
+type WebsocketPrivateOrderResponseV2 struct {
+	Orders   []WebsocketPrivateOrderV2 `json:"args"`
+}
+
 type WebsocketPrivatePnLResponse struct {
 	Topic string      `json:"topic"`
 	Args  interface{} `json:"args"`
@@ -81,6 +120,27 @@ type WebsocketPrivateTradesData struct {
 type WebsocketPrivateTradesDataResponse struct {
 	Topic string                       `json:"topic,omitempty"`
 	Args  []WebsocketPrivateTradesData `json:"args,omitempty"`
+}
+
+func (s *WebsocketPrivateService) SubscribeOrderV2(
+	handler func(WebsocketPrivateOrderResponseV2) error,
+) (func() error, error) {
+
+	args := fmt.Sprintf("sor+%s", "{}")
+
+	if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+		return nil, err
+	}
+
+	s.orderResponseHandlerV2 = handler
+
+	return func() error {
+		args := fmt.Sprintf("uor+{}")
+		if err := s.writeMessage(websocket.TextMessage, []byte(args)); err != nil {
+			return err
+		}
+		return nil
+	}, nil
 }
 
 func (s *WebsocketPrivateService) SubscribeOrder(

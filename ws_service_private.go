@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/websocket"
+	"fmt"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 // WebsocketPrivateServiceI :
@@ -43,6 +45,9 @@ type WebsocketPrivateServiceI interface {
 		WebsocketPrivateOrderParam,
 		func(WebsocketPrivateOrderResponse) error,
 	) (func() error, error)
+	SubscribeOrderV2(
+		func(WebsocketPrivateOrderResponseV2) error,
+	) (func() error, error)
 	UnsubscribeOrder(
 		WebsocketPrivateOrderParam,
 	) error
@@ -73,6 +78,7 @@ type WebsocketPrivateService struct {
 	accountSummaryResponseHandler func(WebsocketPrivateAccountSummaryResponse) error
 	accountLedgerResponseHandler  func(WebsocketPrivateAccountLedgerResponse) error
 	orderResponseHandler          func(WebsocketPrivateOrderResponse) error
+	orderResponseHandlerV2          func(WebsocketPrivateOrderResponseV2) error
 	pnlResponseHandler            func(WebsocketPrivatePnLResponse) error
 	tradesDataResponseHandler     func(WebsocketPrivateTradesDataResponse) error
 }
@@ -246,13 +252,43 @@ func (s *WebsocketPrivateService) Run() error {
 			}
 		}
 	case MessageTopicSubscribeOrder:
-		var resp WebsocketPrivateOrderResponse
-		if err := s.parseResponse(message, &resp); err != nil {
-			return err
-		}
 		if s.orderResponseHandler != nil {
+			var resp WebsocketPrivateOrderResponse
+			if err := s.parseResponse(message, &resp); err != nil {
+				return err
+			}
 			if err := s.orderResponseHandler(resp); err != nil {
 				return err
+			}
+		} else if s.orderResponseHandlerV2 != nil {
+			var preResp interface{}
+			if err := s.parseResponse(message, &preResp); err != nil {
+				return err
+			}
+			preMap, preMapOk := preResp.(map[string]interface{})
+			if !preMapOk {
+				return fmt.Errorf("unexpected response type: %T", preResp)
+			}
+
+			topicValue, hasTopic := preMap["topic"]
+			if !hasTopic {
+				return nil
+			}
+			topic, ok := topicValue.(string)
+			if !ok {
+				return fmt.Errorf("topic is not string: %T", topic)
+			}
+			if topic == "sor" {
+				var resp WebsocketPrivateOrderResponseV2
+				if err := s.parseResponse(message, &resp); err != nil {
+					return err
+				}
+				if err := s.orderResponseHandlerV2(resp); err != nil {
+					return err
+				}
+			} else {
+				// ignore message with topic of system: {"topic":"system","hb":1778570361377}
+				return nil
 			}
 		}
 	case MessageTopicSubscribePnL:
