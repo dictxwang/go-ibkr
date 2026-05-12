@@ -279,6 +279,7 @@ func (s *WebsocketPrivateService) Run() error {
 				return fmt.Errorf("topic is not string: %T", topic)
 			}
 			if topic == "sor" {
+				fmt.Printf(">> get order message: %s\n", string(message))
 				var resp WebsocketPrivateOrderResponseV2
 				if err := s.parseResponse(message, &resp); err != nil {
 					return err
