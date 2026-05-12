@@ -47,7 +47,7 @@ type WebsocketPrivateOrderResponse struct {
 type WebsocketPrivateOrderV2 struct {
 	AccountId          string  `json:"acct,omitempty"`
 	Exchange           string  `json:"exchange,omitempty"`
-	ContractIdExchange int     `json:"conidex,omitempty"`
+	ContractIdExchange string     `json:"conidex,omitempty"`
 	ContractId         int     `json:"conid,omitempty"`
 	Account            string `json:"account,omitempty"`
 	OrderId            int64   `json:"orderId,omitempty"`
