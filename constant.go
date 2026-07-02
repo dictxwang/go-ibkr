@@ -25,6 +25,7 @@ const (
 	ExchangeTypeOSEJPN = ExchangeType("OSE.JPN")
 	ExchangeTypeSGX    = ExchangeType("SGX")
 	ExchangeTypeTSEJ   = ExchangeType("TSEJ")
+	ExchangeTypeOVERNIGHT   = ExchangeType("OVERNIGHT")
 )
 
 const (
@@ -129,6 +130,7 @@ const (
 	TimeInForceFOK = TimeInForce("FOK")
 	TimeInForceDTC = TimeInForce("DTC")
 	TimeInForcePAX = TimeInForce("PAX")
+	TimeInForceOVT = TimeInForce("OVT")
 )
 
 const (
