@@ -143,7 +143,7 @@ func (s *OrdersService) SuppressMessages(messageIds []string) (*SuppressMessages
 
 type PlaceOrderParam struct {
 	AccountId                  string                 `json:"acctId"`
-	ContractId                 int                    `json:"conid"`
+	ContractId                 *int                   `json:"conid"`
 	ContractIdExchange         string                 `json:"conidex"`
 	ManualIndicator            bool                   `json:"manualIndicator"`
 	ExternalOperator           string                 `json:"extOperator,omitempty"`
