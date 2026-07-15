@@ -180,7 +180,7 @@ type LiveOrderItem struct {
 	TimeInForce        string  `json:"timeInForce,omitempty"`
 
 	Side         string  `json:"side,omitempty"`
-	AveragePrice float64 `json:"avgPrice,omitempty"`
+	AveragePrice string `json:"avgPrice,omitempty"`
 }
 
 type GetLiveOrdersResponse struct {
